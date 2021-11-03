@@ -6,6 +6,7 @@ import os
 import csv
 import json
 
+
 base_url = 'https://m.weibo.cn/api/container/getIndex?'
 
 headers = {
@@ -52,15 +53,14 @@ def get_page(page,title): #得到页面的请求，params是我们要根据网�
         'queryVal':title,
         'featurecode':'20000320',
         'luicode':'10000011',
-        'lfid':'106003type=1',
         'title':title
     }
     url = base_url + urlencode(params)
-    print(url)
+    #print(url)
     try:
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
-            print(page) 
+            print('page:',page)
             return response.json()
     except requests.ConnectionError as e:
         print('Error', e.args)
@@ -80,16 +80,109 @@ def parse_page(json , label):
             weibo['id'] = item.get('id')
             weibo['label'] = label
             weibo['text'] = pq(item.get('text')).text().replace(" ", "").replace("\n" , "")
+            weibo['location']=get_user_location(item)
             res.append(weibo)
     return res
+
+def get_user_location(mblog):
+    '''输入json中mblog对象，输出location字符串'''
+    user=mblog.get('user')
+    profile_url=user.get('profile_url')
+    uid=str(user.get('id'))
+
+    containerid=get_containerid(uid)
+    if containerid==None:
+        print('containerid为空')
+        return '未知'
+    'https://m.weibo.cn/api/container/getIndex?uid=1852299857&' \
+    'luicode=10000011&lfid=100103type%3D1%26q%3D%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD&type=uid&value=1852299857&containerid=2302831852299857'
+    pre='https://m.weibo.cn/api/container/getIndex?'
+    params = {
+        'uid': uid,
+        'type':'uid',
+        'luicode':'10000011',
+        'lfid':'100103type=1',
+        'value': uid,
+        'containerid': containerid,
+    }
+    url=pre+'uid='+uid+'&luicode=10000011&lfid=100103type=1&type=uid&value='+uid+'&containerid='+containerid
+
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            #print(response.json())
+            cards=response.json().get('data').get('cards')
+            location='未知'
+            if cards==[]:
+                return location
+            else:
+
+                for card in cards:
+
+                    card_group=card.get('card_group')
+                    if card_group!=None:
+
+                        for group in card_group:
+                            if group.get('item_name')=='所在地':
+                                location=group.get('item_content')
+                                break
+            if location=='未知':
+                print(url)
+                print(cards)
+            return location
+    except requests.ConnectionError as e:
+        print('ConnectionError', e.args)
+
+
+
+def get_containerid(uid):
+    '''输入用户uid，输出主页包含位置信息的containerid
+    部分请求返回{"ok":0,"msg":"这里还没有内容","data":{"cards":[]}}，原因可能是没有登陆，待解决
+    '''
+    'https://m.weibo.cn/api/container/getIndex?uid=1852299857&luicode=10000011&'
+    'lfid=100103type%3D1%26q%3D%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD&type=uid&value=1852299857'
+
+    pre='https://m.weibo.cn/api/container/getIndex?'
+    params = {
+        'uid': uid,
+        'type':'uid',
+        'luicode':'10000011',
+        'lfid':'100103type=1',
+        'value': uid,
+    }
+    url = pre + urlencode(params)
+    #print('从uid获取containerid的url:',url)
+    try:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            tabsInfo=response.json().get('data').get('tabsInfo')
+            #print('tabsinfo:',tabsInfo)
+            containerid=None
+            if tabsInfo==None:
+                containerid=None
+            else:
+                tabs=tabsInfo.get('tabs')#tabs0-3对应微博用户主页的4个标签，地址在第一页
+                for tab in tabs:
+                    if tab.get('title')=='主页':
+                        containerid=tab.get('containerid')
+                        break
+            if containerid==None:
+                print('response:    ',response.json())
+                print(response.json().get('data'))
+                print('url:       ',url)
+                print('containerid为None')
+            return containerid
+    except requests.ConnectionError as e:
+        print('Error', e.args)
+
 
 if __name__ == '__main__':
 
     title = input("请输入搜索关键词：")
     path = "article.csv"
-    item_list = ['id','text', 'label']
+    item_list = ['id','text', 'label','location']
     s = SaveCSV()
-    for page in range(10,20):#循环页面
+    for page in range(0,10):#循环页面
         try:
             time.sleep(1)         #设置睡眠时间，防止被封号
             json = get_page(page , title )
@@ -99,9 +192,9 @@ if __name__ == '__main__':
             for result in results:
                 if result == None:
                     continue
-                print(result)
                 s.save(item_list, path , result)
-        except TypeError:
-            print("完成")
+        except TypeError as e:
+            print("格式错误，跳过当前页")
+            print(e)
             continue
 
