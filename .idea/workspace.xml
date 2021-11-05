@@ -48,6 +48,8 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\WebStorm 2020.1.4\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -60,7 +62,8 @@
       <option name="presentableId" value="Default" />
       <updated>1635234925417</updated>
       <workItem from="1635234926845" duration="3617000" />
-      <workItem from="1635315351968" duration="8646000" />
+      <workItem from="1635315351968" duration="26268000" />
+      <workItem from="1636095351934" duration="4617000" />
     </task>
     <servers />
   </component>
@@ -80,6 +83,10 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="738" y="293" key="FileChooserDialogImpl" timestamp="1636095039320">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="738" y="293" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1636095039320" />
     <state x="623" y="242" width="672" height="678" key="search.everywhere.popup" timestamp="1635827756596">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

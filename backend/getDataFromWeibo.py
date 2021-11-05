@@ -175,7 +175,45 @@ def get_containerid(uid):
     except requests.ConnectionError as e:
         print('Error', e.args)
 
+def main(keyword, path='article.csv'):
 
+    title = keyword
+    path = path
+    item_list = ['id', 'text', 'label', 'location']
+    s = SaveCSV()
+    for page in range(0, 1):  # 循环页面
+        try:
+            time.sleep(1)  # 设置睡眠时间，防止被封号
+            json = get_page(page, title)
+            results = parse_page(json, title)
+            if requests == None:
+                continue
+            for result in results:
+                if result == None:
+                    continue
+                s.save(item_list, path, result)
+        except TypeError as e:
+            print("格式错误，跳过当前页")
+            print(e)
+            continue
+
+    cities=[]
+    with open(path)as f:
+        f_csv = csv.reader(f)
+        for row in f_csv:
+            print(row)
+            print(row[3].split(' ')[0])
+            cities.append(row[3].split(' ')[0])
+    cityName=set(cities)
+    cityDict={}
+    for city in cityName:
+        cityDict[city]=0
+    for city in cities:
+        cityDict[city]+=1
+
+    print('删除:',path)
+    os.remove(path)
+    return cityDict
 if __name__ == '__main__':
 
     title = input("请输入搜索关键词：")
