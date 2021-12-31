@@ -1,6 +1,6 @@
 <template>
-  <div class="echarts">
-    <div :style="{height:'800px',width:'100%'}" ref="myEchart"></div>
+  <div >
+    <div  ref="myEchart" style="height:100%;width:100%"></div>
   </div>
 </template>
 <script>
@@ -242,9 +242,9 @@
         window.onresize = myChart.resize;
         myChart.setOption({ // 进行相关配置
 
-          backgroundColor: "#000000",
+          backgroundColor: "#013954",
           title:{
-            text:'geo地图',
+            text:'热点地图',
             left:'center',
             textStyle:{
               color:'white'
@@ -265,26 +265,45 @@
           geo: { // 这个是重点配置区
             map: 'china', // 表示中国地图
             roam: true, //是否允许缩放
+            center: [113.83531246, 34.0267395887],
             label: {
               normal: {
                 show: true, // 是否显示对应地名
-
                 textStyle: {
                   color: 'rgba(255,255,255,1)'
                 }
               },
               emphasis:{
-                show: true,
-                color:'#fff',
+                show: false,
               }
             },
             itemStyle: {
               normal: {
-                areaColor: 'rgb(79, 163,213)',
-                borderColor: '#002097'
+
+                areaColor: {
+                  type: 'radial',
+                  x: 0.5,
+                  y: 0.5,
+                  r: 0.8,
+                  colorStops: [{
+                    offset: 0,
+                    color: 'rgba(147, 235, 248, 0)' // 0% 处的颜色
+                  }, {
+                    offset: 1,
+                    color: 'rgba(147, 235, 248, .2)' // 100% 处的颜色
+                  }],
+                  globalCoord: false // 缺省为 false
+                },
+                borderColor: 'rgba(147, 235, 248, 1)',
+                borderWidth: 1,
+                shadowColor: 'rgba(128, 217, 248, 1)',
+                // shadowColor: 'rgba(255, 255, 255, 1)',
+                shadowOffsetX: -2,
+                shadowOffsetY: 2,
+                shadowBlur: 10
               },
               emphasis: {
-                areaColor: '#293fff',
+                areaColor: 'rgba(37, 43, 61, .5)',
                 shadowOffsetX: 0,
                 shadowOffsetY: 0,
                 shadowBlur: 20,

@@ -10,5 +10,20 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
-
+<script>
+  fnResize();
+  window.onresize = function () {
+    fnResize();
+  }
+  function fnResize() {
+    var deviceWidth = document.documentElement.clientWidth || window.innerWidth;
+    if (deviceWidth >= 1920) {
+      deviceWidth = 1920;
+    }
+    if (deviceWidth <= 1080) {
+      deviceWidth = 1080;
+    }
+    document.documentElement.style.fontSize = (deviceWidth / 80) + 'px';
+  }
+</script>
 </html>

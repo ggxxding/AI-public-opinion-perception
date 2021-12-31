@@ -28,9 +28,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
         <option value="Vue Single File Component" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -49,7 +49,54 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\WebStorm 2020.1.4\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+  </component>
+  <component name="RunManager">
+    <configuration name="selenium_weibo,py" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AI-public-opinion-perception" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/backend" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/backend/selenium_weibo,py.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AI-public-opinion-perception" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/backend" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/backend/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -63,7 +110,18 @@
       <updated>1635234925417</updated>
       <workItem from="1635234926845" duration="3617000" />
       <workItem from="1635315351968" duration="26268000" />
-      <workItem from="1636095351934" duration="4617000" />
+      <workItem from="1636095351934" duration="14039000" />
+      <workItem from="1636678307029" duration="153000" />
+      <workItem from="1636678484927" duration="46000" />
+      <workItem from="1636678544496" duration="83000" />
+      <workItem from="1636678637628" duration="599000" />
+      <workItem from="1636697880598" duration="14901000" />
+      <workItem from="1639011985391" duration="133000" />
+      <workItem from="1639012154589" duration="19568000" />
+      <workItem from="1639966422840" duration="56300000" />
+      <workItem from="1640927329087" duration="6435000" />
+      <workItem from="1640935266412" duration="17000" />
+      <workItem from="1640935554736" duration="1844000" />
     </task>
     <servers />
   </component>
@@ -83,13 +141,37 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="738" y="293" key="FileChooserDialogImpl" timestamp="1636095039320">
+    <state x="252" y="296" key="FileChooserDialogImpl" timestamp="1640764200728">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="738" y="293" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1636095039320" />
-    <state x="623" y="242" width="672" height="678" key="search.everywhere.popup" timestamp="1635827756596">
+    <state x="252" y="296" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1640764200728" />
+    <state width="1471" height="276" key="GridCell.Tab.0.bottom" timestamp="1640939200325">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="623" y="242" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1635827756596" />
+    <state width="1471" height="276" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1640939200325" />
+    <state width="1471" height="276" key="GridCell.Tab.0.center" timestamp="1640939200325">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1471" height="276" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1640939200325" />
+    <state width="1471" height="276" key="GridCell.Tab.0.left" timestamp="1640939200325">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1471" height="276" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1640939200325" />
+    <state width="1471" height="276" key="GridCell.Tab.0.right" timestamp="1640939200325">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1471" height="276" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1640939200325" />
+    <state x="484" y="225" key="SettingsEditor" timestamp="1640937600549">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="484" y="225" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1640937600549" />
+    <state x="614" y="251" key="run.anything.popup" timestamp="1640136875498">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="614" y="251" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1640136875498" />
+    <state x="623" y="242" width="672" height="678" key="search.everywhere.popup" timestamp="1640926552417">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="242" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1640926552417" />
   </component>
 </project>
