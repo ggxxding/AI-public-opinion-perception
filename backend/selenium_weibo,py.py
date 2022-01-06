@@ -16,7 +16,7 @@ from urllib.parse import urlencode
 
 parser = argparse.ArgumentParser(description='description')
 parser.add_argument('-k','--keyword', type=str, default='人工智能',help='searching keyword')
-parser.add_argument('-s','--start', type=str, default='2021-02-04-19',help='start time, format: yyyy-mm-dd-h(2021-01-01-0)')
+parser.add_argument('-s','--start', type=str, default='2021-02-07-01',help='start time, format: yyyy-mm-dd-h(2021-01-01-0)')
 parser.add_argument('-e','--end', type=str, default='2022-01-01-0',help='end time, format: yyyy-mm-dd-h(2021-12-31-23)')
 args = parser.parse_args()
 
@@ -170,6 +170,7 @@ def get_location_from_page(uid):
     if ficon_cd_place:
         location = ficon_cd_place[0].find_element_by_xpath('../..').text.replace('2','').replace('\n','')
     driver.switch_to.window(driver_window1)
+    uid_loc_dict[str(uid)] = location
     return location
 
 def login():
@@ -269,7 +270,7 @@ def parse_page(timescope, page, keyword):
                 name_href = name[0].get_attribute('href')
                 uid1 = re.sub(r'(.*)weibo.com(\D*)(\d+)(\D*)(.*)', r'\3', name_href)
                 wb1['uid'] = uid1
-                wb1['location'] = get_location_from_page(uid1)
+                # wb1['location'] = get_location_from_page(wb1['uid'])
 
         card_content = card.find_elements_by_xpath('./div[@class="content"]/p[@node-type="feed_list_content"]')
         if card_content:
@@ -303,7 +304,7 @@ def parse_page(timescope, page, keyword):
                 name_href = name[0].get_attribute('href')
                 uid2 = re.sub(r'(.*)weibo.com(\D*)(\d+)(\D*)(.*)', r'\3', name_href)
                 wb2['uid'] = uid2
-                wb2['location'] = get_location_from_page(uid2)
+                # wb2['location'] = get_location_from_page(uid2)
 
                 card_comment_content = name[0].find_elements_by_xpath('../p[@node-type="feed_list_content"]')
                 if card_comment_content:
@@ -329,20 +330,20 @@ def parse_page(timescope, page, keyword):
             else:
                 pass
         print('----')
-        if wb1['text'] != '' and keyword in wb1['text'] and wb1['text'] not in mycol.distinct('text'):
-            # wb1['location'] = get_location(uid1)
+        if wb1['text'] != '' and keyword in wb1['text'] and not mycol.find_one({'text':wb1['text']}):
+            wb1['location'] = get_location_from_page(wb1['uid'])
             mycol.insert_one(wb1)
             print('insert')
-        elif wb1['longText'] != '' and keyword in wb1['longText'] and wb1['longText'] not in mycol.distinct('longText'):
-            # wb1['location'] = get_location(uid1)
+        elif wb1['longText'] != '' and keyword in wb1['longText'] and not mycol.find_one({'longText':wb1['longText']}):
+            wb1['location'] = get_location_from_page(wb1['uid'])
             mycol.insert_one(wb1)
             print('insert')
-        if wb2['text'] != '' and keyword in wb2['text'] and wb2['text'] not in mycol.distinct('text'):
-            # wb2['location'] = get_location(uid2)
+        if wb2['text'] != '' and keyword in wb2['text'] and not mycol.find_one({'text':wb2['text']}) :
+            wb2['location'] = get_location_from_page(wb2['uid'])
             mycol.insert_one(wb2)
             print('insert')
-        elif wb2['longText'] != '' and keyword in wb2['longText'] and wb2['longText'] not in mycol.distinct('longText'):
-            # wb2['location'] = get_location(uid2)
+        elif wb2['longText'] != '' and keyword in wb2['longText'] and not mycol.find_one({'longText':wb2['longText']}):
+            wb2['location'] = get_location_from_page(wb2['uid'])
             mycol.insert_one(wb2)
             print('insert')
 
