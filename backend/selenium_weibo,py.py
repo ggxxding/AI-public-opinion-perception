@@ -16,21 +16,26 @@ from urllib.parse import urlencode
 
 parser = argparse.ArgumentParser(description='description')
 parser.add_argument('-k','--keyword', type=str, default='人工智能',help='searching keyword')
-
-parser.add_argument('-s','--start', type=str, default='2021-01-01',help='start time, format: yyyy-mm-dd')
-parser.add_argument('-e','--end', type=str, default='2021-12-30',help='end time, format: yyyy-mm-dd')
-
+parser.add_argument('-s','--start', type=str, default='2021-02-04-19',help='start time, format: yyyy-mm-dd-h(2021-01-01-0)')
+parser.add_argument('-e','--end', type=str, default='2022-01-01-0',help='end time, format: yyyy-mm-dd-h(2021-12-31-23)')
 args = parser.parse_args()
 
 myclient = pymongo.MongoClient('mongodb://192.168.71.214:27017/')
 mydb = myclient['spider_weibo']
 collist = mydb.list_collection_names()
-mycol = mydb['spider_weibo']  # 'id,text,label,location,created_at'
+mycol = mydb['selenium_weibo']
+uid_loc_dict={}
+for i in mycol.find({},{'uid':1,'location':1}):
+    uid_loc_dict[str(i['uid'])]=i['location']
 
-delay=1/0.3
+delay=1/0.3 #0.3次请求/秒
 driver = webdriver.Chrome(r'C:\Users\sstl\Documents\GitHub\chromedriver.exe')
 driver.maximize_window()
-wait = ui.WebDriverWait(driver, 10)  # 设定最长等待加载时间为10秒
+driver_window1 = driver.current_window_handle
+driver.execute_script('window.open("https://www.baidu.com/")')
+driver_window2 = driver.window_handles[1]
+driver.switch_to.window(driver_window1)
+wait = ui.WebDriverWait(driver, 5)  # 设定最长等待加载时间为10秒
 base_url='https://s.weibo.com/weibo?'
 headers = {
     'Host': 'm.weibo.cn',
@@ -38,7 +43,6 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36',
     'X-Requested-With': 'XMLHttpRequest',
     }
-
 class Logger(object):
     level_relations = {
         'debug':logging.DEBUG,
@@ -85,7 +89,7 @@ def get_containerid(uid):
         'value': uid,
     }
     url = pre + urlencode(params)
-    #print('从uid获取containerid的url:',url)
+    print('从uid获取containerid的url:',url)
     try:
         time.sleep(delay)
         response = requests.get(url, headers=headers)
@@ -100,13 +104,16 @@ def get_containerid(uid):
                         break
             except:
                 containerid=None
-                log.logger.error('报错,获取containerid失败')
+                err_info = '报错,获取containerid失败,uid: ' + str(uid)
+                log.logger.error(err_info)
             return containerid
     except requests.ConnectionError as e:
-        log.logger.error('报错,获取container连接失败')
-        print('Error', e.args)
+        err_info = '报错,获取container连接失败,uid: ' + str(uid)
+        log.logger.error(err_info)
+        print('Error:', e.args)
         return None
 def get_location(uid):
+
     'https://m.weibo.cn/api/container/getIndex?type=uid&value=6248471088&containerid=2302836248471088'
     pre='https://m.weibo.cn/api/container/getIndex?'
     containerid = get_containerid(uid)
@@ -136,10 +143,34 @@ def get_location(uid):
                                 location=group.get('item_content')
                                 break
             if location=='未知':
+                err_info = 'location未知, uid: '+ str(uid)
+                log.logger.error(err_info)
                 pass
             return location
     except requests.ConnectionError as e:
         print('ConnectionError', e.args)
+
+def get_location_from_page(uid):
+    location = uid_loc_dict.get(str(uid))
+    if location:
+        return location
+    driver.switch_to.window(driver_window2)
+    url='https://weibo.com/'+str(uid)
+    location="未知"
+    for i in range(5):
+        try:
+            driver.get(url)
+            wait.until(lambda driver: driver.find_element_by_class_name("more_txt"))
+            break
+        except:
+            time.sleep(3)
+            log.logger.info('等待3s,刷新url: %s' % (url))
+            pass
+    ficon_cd_place = driver.find_elements_by_class_name('ficon_cd_place')
+    if ficon_cd_place:
+        location = ficon_cd_place[0].find_element_by_xpath('../..').text.replace('2','').replace('\n','')
+    driver.switch_to.window(driver_window1)
+    return location
 
 def login():
     driver.get('https://weibo.com/login.php')
@@ -150,28 +181,41 @@ def login():
     input('手动登陆账户后按回车:')
     print('确认登录，准备开始搜索')
 
+
 def search(keyword, start, end):
     # start = '2021-01-01'
     # end   = '2021-12-30'
     log.logger.info('Begin searching from: %s to %s'%(start,end))
-    one_day = datetime.timedelta(days=1)
-    start_date = datetime.datetime.strptime(start, '%Y-%m-%d')
-    end_date = datetime.datetime.strptime(end, '%Y-%m-%d')
-    temp_date = start_date
-    while((end_date-temp_date).days>0):
-        timescope = temp_date.strftime('%Y-%m-%d')+':'+temp_date.strftime('%Y-%m-%d')
-
-        # print(timescope)
+    one_hour = datetime.timedelta(hours=1)
+    start_time = datetime.datetime.strptime(start, '%Y-%m-%d-%H')
+    end_time = datetime.datetime.strptime(end, '%Y-%m-%d-%H')
+    temp_time = start_time
+    while((end_time-temp_time-one_hour).days>-1):
+        timescope = temp_time.strftime('%Y-%m-%d-%H')+':'+(temp_time+one_hour).strftime('%Y-%m-%d-%H')
         params = {
             'q': keyword,
             'typeall': 1,
             'suball': 1,
             'timescope': 'custom:'+timescope,
             'Refer': 'SWeibo_box',
+            'page': 1,
         }
         url = base_url + urlencode(params)
-        driver.get(url)
-        wait.until(lambda driver: driver.find_element_by_xpath("//a[@class='next']"))
+
+        for i in range(5):
+            try:
+                driver.get(url)
+                wait.until(lambda driver: driver.find_element_by_xpath("//div[@id='weibo_top_public']"))
+                break
+            except:
+                time.sleep(3)
+                log.logger.info('等待3s,刷新url: %s'%(url))
+                pass
+        #等待页面加载完成，一开始设想查找“下一页”按钮，但是如果只有一页内容，会找不到，所以目前的策略是等待顶部导航条加载完成
+        wait.until(lambda driver: driver.find_element_by_xpath("//div[@id='weibo_top_public']"))
+        #总页数
+        page_num = max(len(driver.find_elements_by_xpath('//ul[@class="s-scroll"]/li')),1)
+        log.logger.info('%s 的总页数: %s'%(timescope, str(page_num)))
         time.sleep(1)
         # card-feed
         #     content
@@ -185,92 +229,122 @@ def search(keyword, start, end):
         #             p node-type="feed_list_content"
         #                a[action - type = "fl_unfold"]  # 展开全文
         #             p node-type="feed_list_content_full"
-        #处理文本
-        cards = driver.find_elements_by_class_name('card-feed')
-        for card in cards:
-            wb1={'label':keyword,'text':'', 'longText':''}
-            wb2={'label':keyword,'text':'', 'longText':''}
-            card_info =card.find_elements_by_xpath('./div[@class="content"]/div[@class="info"]')
-            if card_info:
-                #找名字
-                name = card_info[0].find_elements_by_class_name('name')
-                if name:
-                    wb1['name']=name[0].text
-                    name_href = name[0].get_attribute('href')
-                    uid = re.sub(r'(.*)weibo.com(\D*)(\d+)(\D*)(.*)' ,r'\3',name_href)
-                    wb1['uid'] = uid
-                    wb1['location'] = get_location(uid)
+        for page in range(page_num):#[0,49]
+            parse_page(timescope = timescope,page = page,keyword = keyword)
 
+        temp_time = temp_time+ one_hour
+def parse_page(timescope, page, keyword):
+    print(timescope, page, keyword)
+    params = {
+        'q': keyword,
+        'typeall': 1,
+        'suball': 1,
+        'timescope': 'custom:' + timescope,
+        'Refer': 'SWeibo_box',
+        'page': page + 1,
+    }
+    log.logger.info('解析第%s页' % (str(page + 1)))
+    url = base_url + urlencode(params)
+    for i in range(5):
+        try:
+            driver.get(url)
+            wait.until(lambda driver: driver.find_element_by_xpath("//div[@id='weibo_top_public']"))
+            break
+        except:
+            time.sleep(3)
+            log.logger.info('等待3s,刷新url: %s' % (url))
+            pass
 
-            card_content = card.find_elements_by_xpath('./div[@class="content"]/p[@node-type="feed_list_content"]')
-            if card_content:
-                #  微博内容
-                # 展开全文按钮
-                unfold_button = card_content[0].find_elements_by_xpath('.//a[@action-type="fl_unfold"]')
-                if unfold_button:
-                    unfold_button[0].click()
-                    content_full = card_content[0].find_elements_by_xpath('../p[@node-type="feed_list_content_full"]')[
-                        0].text.replace('\n', '').replace('收起全文d', '')
-                    wb1['longText']=re.sub(r'(.*)(L.*的微博视频)',r'\1',content_full)
-                    wb1['isLongText']=True
-                else:
-                    wb1['text']=re.sub(r'(.*)(L.*的微博视频)',r'\1',card_content[0].text.split('//')[0].replace('\n',''))
-                    wb1['isLongText']=False
-            card_time = card.find_elements_by_xpath('./div[@class="content"]/p[@class="from"]/a[@target="_blank"]')
-            if card_time:
-                if '年' in card_time[0].text:
-                    wb1['created_at'] = re.sub(r'(.*)年(.*)月(.*)日 (.*)', r'\1/\2/\3 \4', card_time[0].text)
-                else:
-                    wb1['created_at'] = datetime.datetime.now().strftime('%Y')+'/'+re.sub(r'(.*)月(.*)日 (.*)', r'\1/\2 \3',card_time[0].text)
+    # 处理文本
+    cards = driver.find_elements_by_class_name('card-feed')
+    for card in cards:
+        wb1 = {'label': keyword, 'text': '', 'longText': ''}
+        wb2 = {'label': keyword, 'text': '', 'longText': ''}
+        card_info = card.find_elements_by_xpath('./div[@class="content"]/div[@class="info"]')
+        if card_info:
+            # 找名字
+            name = card_info[0].find_elements_by_class_name('name')
+            if name:
+                wb1['name'] = name[0].text
+                name_href = name[0].get_attribute('href')
+                uid1 = re.sub(r'(.*)weibo.com(\D*)(\d+)(\D*)(.*)', r'\3', name_href)
+                wb1['uid'] = uid1
+                wb1['location'] = get_location_from_page(uid1)
 
+        card_content = card.find_elements_by_xpath('./div[@class="content"]/p[@node-type="feed_list_content"]')
+        if card_content:
+            #  微博内容
+            # 展开全文按钮
+            unfold_button = card_content[0].find_elements_by_xpath('.//a[@action-type="fl_unfold"]')
+            if unfold_button:
+                unfold_button[0].click()
+                content_full = card_content[0].find_elements_by_xpath('../p[@node-type="feed_list_content_full"]')[
+                    0].text.replace('\n', '').replace('收起全文d', '')
+                wb1['longText'] = re.sub(r'(.*)(L.*的微博视频)', r'\1', content_full)
+                wb1['isLongText'] = True
+            else:
+                wb1['text'] = re.sub(r'(.*)(L.*的微博视频)', r'\1', card_content[0].text.split('//')[0].replace('\n', ''))
+                wb1['isLongText'] = False
+        card_time = card.find_elements_by_xpath('./div[@class="content"]/p[@class="from"]/a[@target="_blank"]')
+        if card_time:
+            if '年' in card_time[0].text:
+                wb1['created_at'] = re.sub(r'(.*)年(.*)月(.*)日 (.*)', r'\1/\2/\3 \4', card_time[0].text)
+            else:
+                wb1['created_at'] = datetime.datetime.now().strftime('%Y') + '/' + re.sub(r'(.*)月(.*)日 (.*)',
+                                                                                          r'\1/\2 \3',
+                                                                                          card_time[0].text)
 
+        # 找被转发的微博
+        card_comment = card.find_elements_by_xpath('./div[@class="content"]/div[@class="card-comment"]')
+        if card_comment:
+            name = card_comment[0].find_elements_by_class_name('name')
+            if name:
+                wb2['name'] = name[0].text[1:]
+                name_href = name[0].get_attribute('href')
+                uid2 = re.sub(r'(.*)weibo.com(\D*)(\d+)(\D*)(.*)', r'\3', name_href)
+                wb2['uid'] = uid2
+                wb2['location'] = get_location_from_page(uid2)
 
-            #找被转发的微博
-            card_comment = card.find_elements_by_xpath('./div[@class="content"]/div[@class="card-comment"]')
-            if card_comment:
-                name = card_comment[0].find_elements_by_class_name('name')
-                if name:
-                    wb2['name']=name[0].text[1:]
-                    name_href = name[0].get_attribute('href')
-                    uid = re.sub(r'(.*)weibo.com(\D*)(\d+)(\D*)(.*)' ,r'\3',name_href)
-                    wb2['uid'] = uid
-                    wb2['location'] = get_location(uid)
-
-                    card_comment_content = name[0].find_elements_by_xpath('../p[@node-type="feed_list_content"]')
-                    if card_comment_content:
-                        unfold_button2 = card_comment_content[0].find_elements_by_xpath('./a[@action-type="fl_unfold"]')
-                        if unfold_button2:
-                            unfold_button2[0].click()
-                            card_comment_content_full = card_comment_content[0].find_elements_by_xpath('../p[@node-type="feed_list_content_full"]')[0].text.replace('\n', '').replace('收起全文d', '')
-                            wb2['longText']= re.sub(r'(.*)(L.*的微博视频)',r'\1',card_comment_content_full)
-                            wb2['isLongText']=True
-                        else:
-                            wb2['text']=re.sub(r'(.*)(L.*的微博视频)', r'\1', card_comment_content[0].text.replace('\n', ''))
-                            wb2['isLongText']=False
-                    comment_time = card_comment[0].find_elements_by_xpath('.//p[@class="from"]/a[@target="_blank"]')
-                    if comment_time:
-                        if '年' in comment_time[0].text:
-                            wb2['created_at'] = re.sub(r'(.*)年(.*)月(.*)日 (.*)', r'\1/\2/\3 \4',comment_time[0].text)
-                        else:
-                            wb2['created_at'] = datetime.datetime.now().strftime('%Y') + '/' + re.sub(r'(.*)月(.*)日 (.*)', r'\1/\2 \3',comment_time[0].text)
-                else:
-                    pass
-            print('----')
-            if wb1['text']!='' and wb1['text'] not in mycol.distinct('text'):
-                mycol.insert_one(wb1)
-                print('insert')
-            elif wb1['longText']!='' and wb1['longText'] not in mycol.distinct('longText'):
-                mycol.insert_one(wb1)
-                print('insert')
-            if wb2['text']!='' and wb2['text'] not in mycol.distinct('text'):
-                mycol.insert_one(wb2)
-                print('insert')
-            elif wb2['longText']!='' and wb2['longText'] not in mycol.distinct('longText'):
-                mycol.insert_one(wb2)
-                print('insert')
-
-        temp_date = temp_date+ one_day
-
+                card_comment_content = name[0].find_elements_by_xpath('../p[@node-type="feed_list_content"]')
+                if card_comment_content:
+                    unfold_button2 = card_comment_content[0].find_elements_by_xpath('./a[@action-type="fl_unfold"]')
+                    if unfold_button2:
+                        unfold_button2[0].click()
+                        card_comment_content_full = \
+                        card_comment_content[0].find_elements_by_xpath('../p[@node-type="feed_list_content_full"]')[
+                            0].text.replace('\n', '').replace('收起全文d', '')
+                        wb2['longText'] = re.sub(r'(.*)(L.*的微博视频)', r'\1', card_comment_content_full)
+                        wb2['isLongText'] = True
+                    else:
+                        wb2['text'] = re.sub(r'(.*)(L.*的微博视频)', r'\1', card_comment_content[0].text.replace('\n', ''))
+                        wb2['isLongText'] = False
+                comment_time = card_comment[0].find_elements_by_xpath('.//p[@class="from"]/a[@target="_blank"]')
+                if comment_time:
+                    if '年' in comment_time[0].text:
+                        wb2['created_at'] = re.sub(r'(.*)年(.*)月(.*)日 (.*)', r'\1/\2/\3 \4', comment_time[0].text)
+                    else:
+                        wb2['created_at'] = datetime.datetime.now().strftime('%Y') + '/' + re.sub(r'(.*)月(.*)日 (.*)',
+                                                                                                  r'\1/\2 \3',
+                                                                                                  comment_time[0].text)
+            else:
+                pass
+        print('----')
+        if wb1['text'] != '' and keyword in wb1['text'] and wb1['text'] not in mycol.distinct('text'):
+            # wb1['location'] = get_location(uid1)
+            mycol.insert_one(wb1)
+            print('insert')
+        elif wb1['longText'] != '' and keyword in wb1['longText'] and wb1['longText'] not in mycol.distinct('longText'):
+            # wb1['location'] = get_location(uid1)
+            mycol.insert_one(wb1)
+            print('insert')
+        if wb2['text'] != '' and keyword in wb2['text'] and wb2['text'] not in mycol.distinct('text'):
+            # wb2['location'] = get_location(uid2)
+            mycol.insert_one(wb2)
+            print('insert')
+        elif wb2['longText'] != '' and keyword in wb2['longText'] and wb2['longText'] not in mycol.distinct('longText'):
+            # wb2['location'] = get_location(uid2)
+            mycol.insert_one(wb2)
+            print('insert')
 
 
 def main():
