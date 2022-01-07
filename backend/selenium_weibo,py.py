@@ -16,7 +16,7 @@ from urllib.parse import urlencode
 
 parser = argparse.ArgumentParser(description='description')
 parser.add_argument('-k','--keyword', type=str, default='人工智能',help='searching keyword')
-parser.add_argument('-s','--start', type=str, default='2021-02-07-01',help='start time, format: yyyy-mm-dd-h(2021-01-01-0)')
+parser.add_argument('-s','--start', type=str, default='2021-03-06-07',help='start time, format: yyyy-mm-dd-h(2021-01-01-0)')
 parser.add_argument('-e','--end', type=str, default='2022-01-01-0',help='end time, format: yyyy-mm-dd-h(2021-12-31-23)')
 args = parser.parse_args()
 
@@ -203,7 +203,7 @@ def search(keyword, start, end):
         }
         url = base_url + urlencode(params)
 
-        for i in range(5):
+        for i in range(100):
             try:
                 driver.get(url)
                 wait.until(lambda driver: driver.find_element_by_xpath("//div[@id='weibo_top_public']"))
@@ -246,7 +246,7 @@ def parse_page(timescope, page, keyword):
     }
     log.logger.info('解析第%s页' % (str(page + 1)))
     url = base_url + urlencode(params)
-    for i in range(5):
+    for i in range(10):
         try:
             driver.get(url)
             wait.until(lambda driver: driver.find_element_by_xpath("//div[@id='weibo_top_public']"))

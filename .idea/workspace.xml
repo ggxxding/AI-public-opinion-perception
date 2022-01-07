@@ -127,10 +127,14 @@
       <workItem from="1640927329087" duration="6435000" />
       <workItem from="1640935266412" duration="17000" />
       <workItem from="1640935554736" duration="1844000" />
+<<<<<<< Updated upstream
       <workItem from="1641258264627" duration="41780000" />
       <workItem from="1641448616740" duration="232000" />
       <workItem from="1641448873924" duration="75000" />
       <workItem from="1641448977578" duration="554000" />
+=======
+      <workItem from="1641258264627" duration="47831000" />
+>>>>>>> Stashed changes
     </task>
     <servers />
   </component>
@@ -149,4 +153,44 @@
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
+<<<<<<< Updated upstream
+=======
+  <component name="WindowStateProjectService">
+    <state x="252" y="296" key="FileChooserDialogImpl" timestamp="1640764200728">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="252" y="296" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1640764200728" />
+    <state width="1471" height="280" key="GridCell.Tab.0.bottom" timestamp="1641529866861">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1471" height="280" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1641529866861" />
+    <state width="1471" height="280" key="GridCell.Tab.0.center" timestamp="1641529866860">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1471" height="280" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1641529866860" />
+    <state width="1471" height="280" key="GridCell.Tab.0.left" timestamp="1641529866860">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1471" height="280" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1641529866860" />
+    <state width="1471" height="280" key="GridCell.Tab.0.right" timestamp="1641529866861">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1471" height="280" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1641529866861" />
+    <state x="484" y="225" key="SettingsEditor" timestamp="1640937600549">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="484" y="225" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1640937600549" />
+    <state x="614" y="251" key="run.anything.popup" timestamp="1640136875498">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="614" y="251" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1640136875498" />
+    <state x="623" y="242" width="672" height="678" key="search.everywhere.popup" timestamp="1640926552417">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="242" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1640926552417" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/AI_public_opinion_perception$selenium_weibo_py.coverage" NAME="selenium_weibo,py Coverage Results" MODIFIED="1641529866855" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend" />
+  </component>
+>>>>>>> Stashed changes
 </project>
