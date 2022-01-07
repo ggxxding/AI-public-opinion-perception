@@ -242,7 +242,7 @@
         window.onresize = myChart.resize;
         myChart.setOption({ // 进行相关配置
 
-          backgroundColor: "#013954",
+          backgroundColor: "",
           title:{
             text:'热点地图',
             left:'center',

@@ -1,12 +1,10 @@
 <template>
-  <div >
-    <el-row>
-      <el-col :span="24">
-      <boldHeader></boldHeader>
-      </el-col>
-    </el-row>
-
-
+  <div>
+<!--    <el-row>-->
+<!--      <el-col :span="24">-->
+<!--      <boldHeader></boldHeader>-->
+<!--      </el-col>-->
+<!--    </el-row>-->
     <el-row>
       <el-col :span="8">
         <div class="overview panel">
@@ -22,21 +20,21 @@
               <h4>190</h4>
               <span>
                 <i class="icon-dot" style="color: #6acca3"></i>
-                季度新增
+                人工智能
               </span>
             </div>
             <div class="item">
               <h4>3,001</h4>
               <span>
                 <i class="icon-dot" style="color: #6acca3"></i>
-                运营设备
+                人脸识别
               </span>
             </div>
             <div class="item">
               <h4>108</h4>
               <span>
                 <i class="icon-dot" style="color: #ed3f35"></i>
-                异常设备
+                其他
               </span>
             </div>
           </div>
@@ -50,42 +48,52 @@
               <a href="javascript:;" >2019</a>
               <a href="javascript:;" >更早</a>
             </div>
-            <div class="chart">
-              <lineChart :lineData="lineData.y2021" :style="{height:screenWidth*0.09 + 'px' ,width:'100%'}"></lineChart>
+            <div class="chart" >
+              <lineChart :lineData="lineData.y2021" :style="{height:0.09*screenWidth+'px' ,width:'100%'}"></lineChart>
             </div>
           </div>
         </div>
+        <div style="background-color: 'red'; height: 50*screenWidth+'px'"></div>
 
       </el-col>
-      <el-col :span="8"></el-col>
+      <el-col :span="16">
+        <div class="map">
+          <div class="chart">
+            <div class="geo">
+
+            </div>
+          </div>
+          <echarts :style='{height: 0.9*screenWidth+"px"}'></echarts>
+        </div>
+      </el-col>
       <el-col :span="8"></el-col>
     </el-row>
 
-    <el-row>
-      <el-col :span="24">
-        <el-form :inline="true" :model="formInline" class="demo-form-inline" style="text-align:center">
-          <el-form-item label="关键字">
-            <el-input v-model="formInline.keyword" placeholder="搜索关键字"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="searching">搜索</el-button>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="16" >
-        <echarts :userJson="response" :style="{ height: screenWidth*0.3 + 'px' ,width:'100%'}" ></echarts>
-      </el-col>
-      <el-col :span="8">
-        <el-row>
-          <sentiment :userJson="sentimentResponse" ></sentiment>
-        </el-row>
-        <el-row>
-          <wordCloud :geturl="picurl"></wordCloud>
-        </el-row>
-      </el-col>
-    </el-row>
+<!--    <el-row>-->
+<!--      <el-col :span="24">-->
+<!--        <el-form :inline="true" :model="formInline" class="demo-form-inline" style="text-align:center">-->
+<!--          <el-form-item label="关键字">-->
+<!--            <el-input v-model="formInline.keyword" placeholder="搜索关键字"></el-input>-->
+<!--          </el-form-item>-->
+<!--          <el-form-item>-->
+<!--            <el-button type="primary" @click="searching">搜索</el-button>-->
+<!--          </el-form-item>-->
+<!--        </el-form>-->
+<!--      </el-col>-->
+<!--    </el-row>-->
+<!--    <el-row>-->
+<!--      <el-col :span="16" >-->
+<!--        <echarts :userJson="response" :style="{ height: screenWidth*0.3 + 'px' ,width:'100%'}" ></echarts>-->
+<!--      </el-col>-->
+<!--      <el-col :span="8">-->
+<!--        <el-row>-->
+<!--          <sentiment :userJson="sentimentResponse" ></sentiment>-->
+<!--        </el-row>-->
+<!--        <el-row>-->
+<!--          <wordCloud :geturl="picurl"></wordCloud>-->
+<!--        </el-row>-->
+<!--      </el-col>-->
+<!--    </el-row>-->
   </div>
 </template>
 /*
