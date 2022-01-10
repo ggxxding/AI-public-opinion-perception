@@ -12,7 +12,7 @@
       };
     },
     mounted() {
-      this.chinaConfigure();
+      this.setOption();
     },
     beforeDestroy() {
       if (!this.chart) {
@@ -22,7 +22,7 @@
       this.chart = null;
     },
     methods: {
-      chinaConfigure() {
+      setOption() {
         console.log('draw!')
         console.log(this.lineData)
 
@@ -96,8 +96,10 @@
     },
     watch:{     //监听value的变化，进行相应的操作即可
       "lineData": function (newv, oldv) {
-
-        this.chinaConfigure()
+        this.setOption()
+      },
+      "year" : function (newv, oldv) {
+        this.setOption()
       },
     },
   }

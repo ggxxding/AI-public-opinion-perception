@@ -34,7 +34,7 @@ def loadWeiboData():
 	if request.method =='POST':
 		keyword = request.form.get("keyword")
 		timeDict = {}
-		cityDict={}
+		cityDict = {}
 		for i in  mycol.distinct('location'):
 			if len(i.split(' ')[0])<5:
 				cityDict[i.split(' ')[0]] = 0
@@ -61,8 +61,8 @@ def loadWeiboData():
 				timeList['earlier'][date_key.month-1]=timeDict[key]
 			else:
 				timeList['y' + str(date_key.year)][date_key.month-1]=timeDict[key]
-		print(timeList)
-		print(timeDict)
+		# print(timeList)
+		# print(timeDict)
 
 		cityList=[{'name':str(x),'value':cityDict[x],'title':str(x)} for x in cityDict]
 

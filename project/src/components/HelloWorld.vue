@@ -8,34 +8,33 @@
     <el-row>
       <el-col :span="8">
         <div class="overview panel">
-
           <div class="inner">
-            <div class="item">
-              <h4>2,190</h4>
-              <span>
+            <div  class="item" >
+              <h4 >2,190</h4>
+              <span >
                 <i class="icon-dot" style="color: #006cff"></i>
-                数据总数
+                <a href="javascript:;" :class="{active:active_all}" @click="click_all">数据总数</a>
               </span>
             </div>
-            <div class="item">
+            <div   class="item">
               <h4>190</h4>
               <span>
                 <i class="icon-dot" style="color: #6acca3"></i>
-                人工智能
+                <a href="javascript:;" :class="{active:active_AI}" @click="click_AI">人工智能</a>
               </span>
             </div>
             <div class="item">
               <h4>3,001</h4>
               <span>
                 <i class="icon-dot" style="color: #6acca3"></i>
-                人脸识别
+                <a href="javascript:;" :class="{active:active_face}" @click="click_face">人脸识别</a>
               </span>
             </div>
-            <div class="item">
+            <div  class="item">
               <h4>108</h4>
               <span>
                 <i class="icon-dot" style="color: #ed3f35"></i>
-                其他
+                <a href="javascript:;" :class="{active:active_other}" @click="click_other">其他</a>
               </span>
             </div>
           </div>
@@ -44,17 +43,24 @@
           <div class="inner">
             <div class="caption">
             <h3 >时间统计</h3>
-              <a href="javascript:;" @click="teest">2021</a>
-              <a >2020</a>
-              <a href="javascript:;" >2019</a>
-              <a href="javascript:;" >更早</a>
+              <a  href="javascript:;" :class="{active:active_2021}" @click="click_2021">2021</a>
+              <a  href="javascript:;" :class="{active:active_2020}" @click="click_2020">2020</a>
+              <a href="javascript:;" :class="{active:active_2019}" @click="click_2019">2019</a>
+              <a href="javascript:;" :class="{active:active_earlier}" @click="click_earlier">更早</a>
             </div>
             <div class="chart" >
-              <lineChart :lineData="lineData" :year="lineData_year" :style="{height:0.09*screenWidth+'px' ,width:'100%'}"></lineChart>
+              <lineChart :lineData="lineData" :year="active_year" :style="{height:0.09*screenWidth+'px' ,width:'100%'}"></lineChart>
             </div>
           </div>
         </div>
-        <div style="background-color: 'red'; height: 50*screenWidth+'px'"></div>
+        <div class="users panel">
+          <div class="inner">
+            <h3>全国微博数量统计</h3>
+            <div class="chart">
+              <barData class="bar" :barData="barData" :active_keyword="active_keyword" :active_year="active_year"   :style="{height:0.085*screenWidth+'px' ,width:'100%'}"></barData>
+            </div>
+          </div>
+        </div>
 
       </el-col>
       <el-col :span="16">
@@ -111,6 +117,7 @@
   import sentiment from './sentiment';
   import wordCloud from './wordCloud';
   import lineChart from './lineChart';
+  import barData from './barData';
 
 export default {
   name: 'HelloWorld',
@@ -126,16 +133,30 @@ export default {
       sentimentResponse:[{'name':'pos','value':50},{'name':'neg','value':50}],
       picurl:null,
       lineData:{
-        y2021:
-          [24, 40, 101, 134, 90, 230, 210, 230, 120, 230, 210, 120],
-        y2020:
-          [23, 75, 12, 97, 21, 67, 98, 21, 43, 64, 76, 38],
-        y2019:
-          [34, 87, 32, 76, 98, 12, 32, 87, 39, 36, 29, 36],
-        earlier:
-          [43, 73, 62, 54, 91, 54, 84, 43, 86, 43, 54, 53],
+        y2021: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        y2020: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        y2019: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        earlier: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       },
-      lineData_year: 'y2021',
+      barData:{
+        '人工智能':{
+          'y2021':[0,1,0,0,0,0,0,0,0,0,0,0],
+          'y2020':[0,0,3,0,0,0,0,0,0,0,0,0],
+          'y2019':[0,0,0,0,0,0,0,0,0,0,0,0],
+          'earlier':[0,0,0,0,0,0,0,0,0,0,0,0],
+        },
+        'cities':['上海','上海','上海','上海','上海','','……','','上海','上海','上海','上海','上海'],
+      },
+      active_year: 'y2021',
+      active_keyword: '人工智能',
+      active_2021:true,
+      active_2020:false,
+      active_2019:false,
+      active_earlier:false,
+      active_all:false,
+      active_AI:true,
+      active_face:false,
+      active_other:false,
     }
   },
   mounted(){
@@ -153,10 +174,37 @@ export default {
     this.loadWeiboData();
   },
   methods:{
-    teest(){
-      this.lineData=[1,1,1,1,1,1,1,1,1,1,1,1];
-      console.log(this.lineData);
-
+    click_2021(){
+      this.active_year= 'y2021',
+      this.active_2021=true;this.active_2020=false;this.active_2019=false;this.active_earlier=false;
+    },
+    click_2020(){
+      this.active_year = 'y2020',
+      this.active_2021=false;this.active_2020=true;this.active_2019=false;this.active_earlier=false;
+    },
+    click_2019(){
+      this.active_year = 'y2019',
+      this.active_2021=false;this.active_2020=false;this.active_2019=true;this.active_earlier=false;
+    },
+    click_earlier(){
+      this.active_year =  'earlier',
+      this.active_2021=false;this.active_2020=false;this.active_2019=false;this.active_earlier=true;
+    },
+    click_all(){
+      this.active_keyword= '全部',
+        this.active_all=true;this.active_AI=false;this.active_face=false;this.active_other=false;
+    },
+    click_AI(){
+      this.active_keyword = '人工智能',
+        this.active_all=false;this.active_AI=true;this.active_face=false;this.active_other=false;
+    },
+    click_face(){
+      this.active_keyword = '人脸识别',
+        this.active_all=false;this.active_AI=false;this.active_face=true;this.active_other=false;
+    },
+    click_other(){
+      this.active_keyword =  '其他',
+        this.active_all=false;this.active_AI=false;this.active_face=false;this.active_other=true;
     },
     timer(){
       var index = 0;
@@ -216,6 +264,7 @@ export default {
     sentiment,
     wordCloud,
     lineChart,
+    barData,
   },
   watch:{     //监听value的变化，进行相应的操作即可
     screenHeight (val) {
@@ -239,18 +288,5 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-  h1, h2 {
-    font-weight: normal;
-  }
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  li {
-    display: inline-block;
-    margin: 0 10px;
-  }
-  a {
-    color: #42b983;
-  }
+
 </style>
