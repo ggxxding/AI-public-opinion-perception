@@ -8,6 +8,7 @@
     <el-row>
       <el-col :span="8">
         <div class="overview panel">
+
           <div class="inner">
             <div class="item">
               <h4>2,190</h4>
@@ -49,7 +50,7 @@
               <a href="javascript:;" >更早</a>
             </div>
             <div class="chart" >
-              <lineChart :lineData="lineData.y2021" :style="{height:0.09*screenWidth+'px' ,width:'100%'}"></lineChart>
+              <lineChart :lineData="lineData" :year="lineData_year" :style="{height:0.09*screenWidth+'px' ,width:'100%'}"></lineChart>
             </div>
           </div>
         </div>
@@ -60,10 +61,10 @@
         <div class="map">
           <div class="chart">
             <div class="geo">
-
+              <echarts :userJson="response" :style='{height: 0.5625*screenWidth+"px"}'></echarts>
             </div>
           </div>
-          <echarts :style='{height: 0.9*screenWidth+"px"}'></echarts>
+
         </div>
       </el-col>
       <el-col :span="8"></el-col>
@@ -134,6 +135,7 @@ export default {
         earlier:
           [43, 73, 62, 54, 91, 54, 84, 43, 86, 43, 54, 53],
       },
+      lineData_year: 'y2021',
     }
   },
   mounted(){
@@ -148,6 +150,7 @@ export default {
       })()
     };
     //this.timer();
+    this.loadWeiboData();
   },
   methods:{
     teest(){
@@ -186,6 +189,24 @@ export default {
         // eslint-disable-next-line
         console.error(error);
       });
+    },
+    loadWeiboData(){
+      let data = new  FormData(); // FormData 对象
+      data.append("keyword", this.formInline.keyword);  //目前直接加载全部数据，该变量暂时不需要，暂时保留
+      axios({
+        method: 'post',
+        url: this.url+'loadWeiboData',
+        data: data,
+        headers: {'Content-Type': 'multipart/form-data'}
+      }).then(res=>{
+        console.log(res.data);
+        this.response=res.data['cityList'];
+        this.lineData = res.data['timeList']
+
+      }).catch((error)=>{
+        console.error(error);
+      })
+
     },
   },
   components:{

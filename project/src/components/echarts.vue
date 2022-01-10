@@ -256,7 +256,7 @@
           dataRange: {
             show: true,
             min: 0,
-            max: 5,
+            max: 5000,
             text: ['High', 'Low'],
             realtime: true,
             calculable: true,
@@ -265,7 +265,7 @@
           geo: { // 这个是重点配置区
             map: 'china', // 表示中国地图
             roam: true, //是否允许缩放
-            center: [113.83531246, 34.0267395887],
+            center: [105.83531246, 34.0267395887],
             label: {
               normal: {
                 show: true, // 是否显示对应地名

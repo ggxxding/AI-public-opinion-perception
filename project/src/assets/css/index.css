@@ -248,6 +248,7 @@ a{
 .map {
   height: 44.1rem;
   margin-bottom: 0.833rem;
+  margin-left: 0.833rem;
   display: flex;
   flex-direction: column;
 }
