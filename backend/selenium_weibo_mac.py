@@ -16,9 +16,9 @@ from urllib.parse import urlencode
 import csv
 
 parser = argparse.ArgumentParser(description='description')
-parser.add_argument('-k','--keyword', type=str, default='人工智能',help='searching keyword')
+parser.add_argument('-k','--keyword', type=str, default='人脸识别',help='searching keyword')
 #2021-09-26-21  2021-09-29-13
-parser.add_argument('-s','--start', type=str, default='2021-09-29-13',help='start time, format: yyyy-mm-dd-h(2021-01-01-0)')
+parser.add_argument('-s','--start', type=str, default='2021-01-01-00',help='start time, format: yyyy-mm-dd-h(2021-01-01-0)')
 parser.add_argument('-e','--end', type=str, default='2022-01-01-0',help='end time, format: yyyy-mm-dd-h(2021-12-31-23)')
 args = parser.parse_args()
 
@@ -338,7 +338,7 @@ def parse_page(timescope, page, keyword):
             rows = [
                 [keyword,  wb1['text'],'', wb1['name'], wb1['uid'], wb1['location'], wb1['isLongText'],wb1['created_at']]
             ]
-            with open('weibo_220110_2.csv', 'a', newline='',encoding='utf-8-sig') as f:
+            with open('weibo_220111_face.csv', 'a', newline='',encoding='utf-8-sig') as f:
                 f_csv = csv.writer(f)
                 f_csv.writerows(rows)
             # mycol.insert_one(wb1)
@@ -349,7 +349,7 @@ def parse_page(timescope, page, keyword):
             rows = [
                 [keyword, '',  wb1['longText'],  wb1['name'], wb1['uid'], wb1['location'], wb1['isLongText'],wb1['created_at']]
             ]
-            with open('weibo_220110_2.csv', 'a', newline='',encoding='utf-8-sig') as f:
+            with open('weibo_220111_face.csv', 'a', newline='',encoding='utf-8-sig') as f:
                 f_csv = csv.writer(f)
                 f_csv.writerows(rows)
 
@@ -360,7 +360,7 @@ def parse_page(timescope, page, keyword):
             rows = [
                 [ keyword,  wb2['text'],  '', wb2['name'],  wb2['uid'], wb2['location'], wb2['isLongText'],wb2['created_at']]
             ]
-            with open('weibo_220110_2.csv', 'a', newline='',encoding='utf-8-sig') as f:
+            with open('weibo_220111_face.csv', 'a', newline='',encoding='utf-8-sig') as f:
                 f_csv = csv.writer(f)
                 f_csv.writerows(rows)
             # mycol.insert_one(wb2)
@@ -370,7 +370,7 @@ def parse_page(timescope, page, keyword):
             rows = [
                 [ keyword,  '', wb2['longText'], wb2['name'], wb2['uid'], wb2['location'], wb2['isLongText'],wb2['created_at']]
             ]
-            with open('weibo_220110_2.csv', 'a', newline='',encoding='utf-8-sig') as f:
+            with open('weibo_220111_face.csv', 'a', newline='',encoding='utf-8-sig') as f:
                 f_csv = csv.writer(f)
                 f_csv.writerows(rows)
             # mycol.insert_one(wb2)

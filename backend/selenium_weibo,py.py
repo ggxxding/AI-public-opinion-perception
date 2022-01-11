@@ -13,7 +13,7 @@ from time import sleep
 from random import choice
 import re
 from urllib.parse import urlencode
-
+#人工智能: 11-20-16 face:01-15-17
 parser = argparse.ArgumentParser(description='description')
 parser.add_argument('-k','--keyword', type=str, default='人工智能',help='searching keyword')
 parser.add_argument('-s','--start', type=str, default='2021-11-20-16',help='start time, format: yyyy-mm-dd-h(2021-01-01-0)')
