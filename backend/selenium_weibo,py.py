@@ -16,7 +16,7 @@ from urllib.parse import urlencode
 
 parser = argparse.ArgumentParser(description='description')
 parser.add_argument('-k','--keyword', type=str, default='人工智能',help='searching keyword')
-parser.add_argument('-s','--start', type=str, default='2021-09-26-21',help='start time, format: yyyy-mm-dd-h(2021-01-01-0)')
+parser.add_argument('-s','--start', type=str, default='2021-11-20-16',help='start time, format: yyyy-mm-dd-h(2021-01-01-0)')
 parser.add_argument('-e','--end', type=str, default='2022-01-01-0',help='end time, format: yyyy-mm-dd-h(2021-12-31-23)')
 args = parser.parse_args()
 

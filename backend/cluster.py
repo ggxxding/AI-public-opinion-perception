@@ -3,9 +3,15 @@ import gensim
 import re
 from ltp import LTP
 ltp = LTP()
+import pymongo
+
+myclient = pymongo.MongoClient('mongodb://192.168.71.214:27017/')
+mydb = myclient['spider_weibo']
+mycol = mydb['selenium_weibo']
+
 
 word_vectors = gensim.models.KeyedVectors.load_word2vec_format('res/word_vectors.bin', binary = True)
-
+print('loaded')
 #文本 -> 向量
 def preprocess(text):
     ''''''
@@ -57,11 +63,18 @@ def singlePass(all_vec , threshold):
 
 
 def main():
-    data = ['你好啊','人工智能正在快速发展','你好啊']#
+    data=[]
+    for weiboData in mycol.find({},{'label':1,'created_at':1,'location':1,'isLongText':1,'text':1,'longText':1}):
+        if weiboData['isLongText']==True:
+            data.append(weiboData['longText'])
+        else:
+            data.append(weiboData['text'])
     preprocessedData=[] #与data对应的128维向量
     for sentence in data:
+        print(sentence)
         vec = preprocess(sentence)
         preprocessedData.append(vec)
+    print('begin singlepass')
     topic_cnt, topic_serial = singlePass(preprocessedData, 0.1)
     print(topic_cnt)#簇数量
     print(topic_serial)#长度与data相同，表示对应data中数据所属簇

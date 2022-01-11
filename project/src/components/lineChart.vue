@@ -5,7 +5,7 @@
   import * as  echarts from "echarts";
   export default {
     name: "lineChart.vue",
-    props: ["lineData","year"],
+    props: ["lineData","active_keyword","active_year"],
     data() {
       return {
         chart: null,
@@ -83,7 +83,7 @@
           series: [
             {
               name: '当月微博数',
-              data: this.lineData[this.year],
+              data: this.lineData[this.active_keyword][this.active_year],
               type: 'line',
               smooth: true,
               itemStyle: {
@@ -98,7 +98,10 @@
       "lineData": function (newv, oldv) {
         this.setOption()
       },
-      "year" : function (newv, oldv) {
+      "active_year" : function (newv, oldv) {
+        this.setOption()
+      },
+      "active_year" : function (newv, oldv) {
         this.setOption()
       },
     },

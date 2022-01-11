@@ -1,14 +1,12 @@
 <template>
-  <div class="echarts">
-    <div  :style="{height:'400px',width:'100%'}"  ref="myEchart"></div>
-  </div>
+    <div  style="height:'100%',width:'100%'"  ref="myEchart"></div>
 </template>
 
 <script>
   import * as  echarts from "echarts";
     export default {
         name: "sentiment.vue",
-      props: ["userJson"],
+      props: ["sentiment"],
       data() {
         return {
           chart: null,
@@ -27,11 +25,11 @@
 
             let data = [];
             let color = ['red', '#00cfff', '#006ced', '#ffe000', '#ffa800', '#ff5b00', '#ff3000'];
-            for (var i = 0; i < this.userJson.length; i++) {
-              if (this.userJson[i].name=='pos'){
+            for (var i = 0; i < this.sentiment.length; i++) {
+              if (this.sentiment[i].name=='pos'){
                 data.push(
                   {
-                    value: this.userJson[i].value,
+                    value: this.sentiment[i].value,
                     name: '积极',
                     itemStyle: {
                       normal: {
@@ -61,10 +59,10 @@
                     },
                   }*/
                 );
-              }else if(this.userJson[i].name=='neg'){
+              }else if(this.sentiment[i].name=='neg'){
                 data.push(
                   {
-                    value: this.userJson[i].value,
+                    value: this.sentiment[i].value,
                     name: '消极',
                     itemStyle: {
                       normal: {
@@ -98,7 +96,7 @@
             }
 
             let option = {
-              backgroundColor: "#013954",
+              backgroundColor: "#101129",
               title: {
                 text: '情感分析',
                 top: '48%',
@@ -149,7 +147,7 @@
                 {
                   name: '情感分析',
                   type: 'pie',
-                  radius: [105, 109],
+                  radius: [70,80],
                   clockwise:false,
                   hoverAnimation: false,
                   data: data,
@@ -183,7 +181,7 @@
           },
       },
       watch:{     //监听value的变化，进行相应的操作即可
-        "userJson": function (newv, oldv) {
+        "sentiment": function (newv, oldv) {
           console.log(newv);
           this.figureConfigure()
         },

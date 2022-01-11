@@ -75,7 +75,7 @@
                 // 使用类目，必须有data属性
                 type: 'category',
                 // 使用 data 中的数据设为刻度文字
-                data: this.barData['cities'],
+                data: this.barData['cities'][this.active_keyword][this.active_year],
                 // 刻度设置
                 axisTick: {
                   // true意思：图形在刻度中间
@@ -128,13 +128,13 @@
                   )
                 },
                 // 图表数据名称
-                name: '用户统计',
+                name: '',
                 // 图表类型
                 type: 'bar',
                 // 柱子宽度
                 barWidth: '60%',
                 // 数据
-                data: this.barData[this.active_keyword][this.active_year],
+                data: this.barData['data'][this.active_keyword][this.active_year],
               }
             ]
             }

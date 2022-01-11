@@ -6,7 +6,7 @@
 <!--      </el-col>-->
 <!--    </el-row>-->
     <el-row>
-      <el-col :span="8">
+      <el-col :span="7">
         <div class="overview panel">
           <div class="inner">
             <div  class="item" >
@@ -49,7 +49,19 @@
               <a href="javascript:;" :class="{active:active_earlier}" @click="click_earlier">更早</a>
             </div>
             <div class="chart" >
-              <lineChart :lineData="lineData" :year="active_year" :style="{height:0.09*screenWidth+'px' ,width:'100%'}"></lineChart>
+              <lineChart :lineData="lineData" :active_keyword="active_keyword" :active_year="active_year" :style="{height:0.09*screenWidth+'px' ,width:'100%'}"></lineChart>
+            </div>
+          </div>
+        </div>
+
+
+
+      </el-col>
+      <el-col :span="10" style="padding: 1.333rem 0.833rem 0;">
+        <div class="map">
+          <div class="chart">
+            <div class="geo">
+              <echarts :mapData="mapData" :active_keyword="active_keyword" :active_year="active_year" :style='{height: 0.3025*screenWidth+"px"}'></echarts>
             </div>
           </div>
         </div>
@@ -61,19 +73,20 @@
             </div>
           </div>
         </div>
-
       </el-col>
-      <el-col :span="16">
-        <div class="map">
-          <div class="chart">
-            <div class="geo">
-              <echarts :userJson="response" :style='{height: 0.5625*screenWidth+"px"}'></echarts>
-            </div>
+      <el-col :span="7">
+        <div class="sentiment panel">
+          <div class="inner">
+            <h3>情感分析</h3>
+            <sentiment :sentiment="sentimentResponse" :style='{height: 0.2225*screenWidth+"px"}'></sentiment>
           </div>
-
+        </div>
+        <div class="word_cloud panel">
+          <div class="inner">
+            <wordCloud :wordCloudList="wordCloudList" :active_keyword="active_keyword" :active_year="active_year"  :style='{height: 0.1525*screenWidth+"px"}'></wordCloud>
+          </div>
         </div>
       </el-col>
-      <el-col :span="8"></el-col>
     </el-row>
 
 <!--    <el-row>-->
@@ -129,23 +142,31 @@ export default {
       formInline: {
         keyword: '',
       },
-      response:[{'name':'上海',value:'999'}],
+      mapData:{'人工智能':{'y2021':[{'name':'上海',value:'999'}]}},
       sentimentResponse:[{'name':'pos','value':50},{'name':'neg','value':50}],
       picurl:null,
       lineData:{
-        y2021: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        y2020: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        y2019: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        earlier: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        '人工智能': {
+          'y2021': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          'y2020': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          'y2019': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          'earlier': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        }
       },
       barData:{
-        '人工智能':{
-          'y2021':[0,1,0,0,0,0,0,0,0,0,0,0],
-          'y2020':[0,0,3,0,0,0,0,0,0,0,0,0],
-          'y2019':[0,0,0,0,0,0,0,0,0,0,0,0],
-          'earlier':[0,0,0,0,0,0,0,0,0,0,0,0],
+        'data': {
+          '人工智能': {
+            'y2021': [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+            'y2020': [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            'y2019': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            'earlier': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          },
         },
-        'cities':['上海','上海','上海','上海','上海','','……','','上海','上海','上海','上海','上海'],
+        'cities': {
+          '人工智能':{
+            'y2021':['上海', '上海', '上海', '上海', '上海', '', '……', '', '上海', '上海', '上海', '上海', '上海'],
+        }
+    }
       },
       active_year: 'y2021',
       active_keyword: '人工智能',
@@ -248,8 +269,10 @@ export default {
         headers: {'Content-Type': 'multipart/form-data'}
       }).then(res=>{
         console.log(res.data);
-        this.response=res.data['cityList'];
-        this.lineData = res.data['timeList']
+        this.mapData=res.data['cityList'];
+        this.lineData = res.data['timeList'];
+        this.barData = res.data['barData'];
+        this.wordCloudList = res.data['wordCloudList']
 
       }).catch((error)=>{
         console.error(error);

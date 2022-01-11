@@ -92,6 +92,10 @@ a{
   background-color: #4c9bfd;
   color: #fff;
 }
+
+.word_cloud{
+  height:15rem;
+}
 /* 监控 */
 .monitor{
 	height: 20rem;
@@ -256,9 +260,10 @@ a{
   color: #4c9bfd;
   font-size: 0.667rem;
 }
-/* 地图  */
+/* 地图  44.1rem*/
+
 .map {
-  height: 44.1rem;
+  height: 29.4rem;
   margin-bottom: 0.833rem;
   margin-left: 0.833rem;
   display: flex;
@@ -282,6 +287,10 @@ a{
   width: 100%;
   height: 100%;
 }
+.sentiment {
+  height: 20.333rem;
+}
+
 /* 用户模块 */
 .users {
   height: 10.333rem;

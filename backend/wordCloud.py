@@ -20,9 +20,9 @@ def return_img_stream(img_local_path):
     img_stream = base64.b64encode(img_stream).decode()
   return img_stream
 
-def draw(textPath='article.csv'):
+def draw(textList):
     font_path='res/SimHei.ttf'
-    text = ' '.join(list(pd.read_csv(textPath)['text'].values))
+    text = ' '.join(textList)
     text = jieba.cut(text)
     text = [x for x in text if len(x)>1 and x!='全文']
     text = ' '.join(text)

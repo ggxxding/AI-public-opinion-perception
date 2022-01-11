@@ -8,7 +8,7 @@
   import '../../node_modules/echarts/map/js/china.js'; // 引入中国地图数据
   export default {
     name: "echarts",
-    props: ["userJson"],
+    props: ["mapData","active_keyword","active_year"],
     data() {
       return {
         chart: null,
@@ -27,7 +27,6 @@
     methods: {
       chinaConfigure() {
         console.log('draw!')
-        console.log(this.userJson)
         var data = [
         ]
 
@@ -369,7 +368,7 @@
                 show: true
               },
               geoIndex:'0',
-              data: this.userJson,
+              data: this.mapData[this.active_keyword][this.active_year],
             },
 
           ]
@@ -377,8 +376,14 @@
       }
     },
     watch:{     //监听value的变化，进行相应的操作即可
-      "userJson": function (newv, oldv) {
+      "mapData": function (newv, oldv) {
 
+        this.chinaConfigure()
+      },
+      "active_year" : function (newv, oldv) {
+        this.chinaConfigure()
+      },
+      "active_keyword" : function (newv, oldv) {
         this.chinaConfigure()
       },
     },
