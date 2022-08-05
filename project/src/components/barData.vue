@@ -6,14 +6,15 @@
   import * as  echarts from "echarts";
     export default {
         name: "barData.vue",
-      props: ["barData","active_keyword","active_year"],
+      props: ["barData","active_keyword","active_timescope","active_year"],
       data() {
         return {
           chart: null,
         };
       },
       mounted() {
-        this.setOption();
+        var myChart = echarts.init(this.$refs.myEchart);
+        myChart.showLoading();
         },
       beforeDestroy() {
         if (!this.chart) {
@@ -25,10 +26,11 @@
       methods: {
         setOption() {
           let myChart = echarts.init(this.$refs.myEchart); //这里是为了获得容器所在位置
+          myChart.hideLoading();
           window.onresize = myChart.resize;
           var item = {
             name: '',
-            value: 1200,
+            value: this.barData['data'][this.active_keyword][this.active_timescope][6],
             // 柱子颜色
             itemStyle: {
               color: '#254065'
@@ -44,6 +46,10 @@
               extraCssText: 'opacity:0'
             }
           };
+          this.barData['data'][this.active_keyword][this.active_timescope][5] = item;
+          this.barData['data'][this.active_keyword][this.active_timescope][6] = item;
+          this.barData['data'][this.active_keyword][this.active_timescope][7] = item;
+
           myChart.setOption({
             // 工具提示
             tooltip: {
@@ -75,7 +81,7 @@
                 // 使用类目，必须有data属性
                 type: 'category',
                 // 使用 data 中的数据设为刻度文字
-                data: this.barData['cities'][this.active_keyword][this.active_year],
+                data: this.barData['cities'][this.active_keyword][this.active_timescope],
                 // 刻度设置
                 axisTick: {
                   // true意思：图形在刻度中间
@@ -134,7 +140,7 @@
                 // 柱子宽度
                 barWidth: '60%',
                 // 数据
-                data: this.barData['data'][this.active_keyword][this.active_year],
+                data: this.barData['data'][this.active_keyword][this.active_timescope],
               }
             ]
             }
@@ -145,7 +151,7 @@
         "barData": function (newv, oldv) {
           this.setOption()
         },
-        "active_year" : function (newv, oldv) {
+        "active_timescope" : function (newv, oldv) {
           this.setOption()
         },
         "active_keyword" : function (newv, oldv) {

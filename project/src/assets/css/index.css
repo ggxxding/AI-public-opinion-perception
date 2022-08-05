@@ -66,10 +66,27 @@ a{
 .overview{
     height: 4.583rem;
   }
-
-  .overview .inner{
+  .overview .filter {
     display: flex;
-    justify-content: space-between;
+  }
+  .overview .filter a {
+    display: block;
+    height: 0.75rem;
+    line-height: 1;
+    padding: 0 0.75rem;
+    color: #1950c4;
+    font-size: 0.75rem;
+    border-right: 0.083rem solid #00f2f1;
+  }
+  .overview .filter a:first-child {
+    padding-left: 0;
+  }
+  .overview .filter a:last-child {
+    border-right: none;
+  }
+  .overview .filter a.active {
+    color: #fff;
+    font-size: 0.833rem;
   }
   .overview h4{
     font-size: 1.167rem;
@@ -80,21 +97,29 @@ a{
   .overview span{
     font-size: 0.667rem;
     color: #fff;
-}
-.overview a {
+  }
+  .overview .data{
+    display: flex;
+    justify-content: space-between;
+  }
+.overview .data a {
   padding: 0.167rem;
   font-size: 0.667rem;
 
   border-radius: 0.125rem;
   color: #0bace6;
 }
-.overview a.active {
+.overview .data a.active {
   background-color: #4c9bfd;
   color: #fff;
 }
 
+.clusterGraph{
+  height:23.418rem;
+}
+
 .word_cloud{
-  height:15rem;
+  height:19.584rem;
 }
 /* 监控 */
 .monitor{
@@ -261,11 +286,9 @@ a{
   font-size: 0.667rem;
 }
 /* 地图  44.1rem*/
-
 .map {
-  height: 29.4rem;
+  height: 25.4rem;
   margin-bottom: 0.833rem;
-  margin-left: 0.833rem;
   display: flex;
   flex-direction: column;
 }
@@ -288,12 +311,12 @@ a{
   height: 100%;
 }
 .sentiment {
-  height: 20.333rem;
+  height: 19.583rem;
 }
 
 /* 用户模块 */
 .users {
-  height: 10.333rem;
+  height: 12.434rem;
   display: flex;
 }
 .users .chart {

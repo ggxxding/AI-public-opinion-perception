@@ -11,6 +11,7 @@ from transformers import get_linear_schedule_with_warmup
 from sklearn.metrics import f1_score, accuracy_score
 from data_util import encode_fn
 import textProcess
+import pymongo
 device = torch.device('cuda')
 #tokenizer = BertTokenizer.from_pretrained('clue/roberta_chinese_base')
 tokenizer = RoFormerTokenizer.from_pretrained('junnyu/roformer_chinese_base')
@@ -23,7 +24,6 @@ def flat_accuracy(preds, labels):
 def predict(path='article.csv'):
     batch_size=32
     df=pd.read_csv(path)
-
     text = df['text'].values
 
     for i in range(text.shape[0]):
@@ -71,8 +71,47 @@ def predict(path='article.csv'):
     senti=sum/len(final_preds)
 
     return [{'name':'pos','value':sum},{'name':'neg','value':len(final_preds)-sum}]
+def predict_from_mongo():
 
+    model = RoFormerForSequenceClassification.from_pretrained('junnyu/roformer_chinese_base', num_labels=2, output_attentions=False,
+                                                          output_hidden_states=False)
+    model.load_state_dict(torch.load('../experiments/data/roformer-chinese-base-simplifyweibo.pt'))
 
+    print('model loaded')
+    model.cuda()
+    model.eval()
+
+    myclient = pymongo.MongoClient('mongodb://192.168.71.214:27017/')
+    mydb = myclient['spider_weibo']
+    collist = mydb.list_collection_names()
+    mycol = mydb['selenium_weibo_test']
+
+    for x in mycol.find({}, {'isLongText': 1, 'text': 1, 'longText': 1}):
+        if x['isLongText']==True:
+            text = x['longText']
+        else:
+            text = x['text']
+        text = np.array([text],dtype=str)
+        for i in range(text.shape[0]):
+            text[i] = textProcess.clearTxt(text[i])
+        print(text)
+        all_input_ids = encode_fn(text)
+        print(all_input_ids)
+        dataset = TensorDataset(all_input_ids)
+        test_dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
+
+        preds=[]
+        for step, batch in enumerate(test_dataloader):
+            with torch.no_grad():
+                output = model(batch[0].to(device), token_type_ids=None, attention_mask=(batch[0] > 0).to(device))
+                print(output)
+                logits = output[0]
+                print('logits:', logits)
+                logits = logits.detach().cpu().numpy()
+                preds.append(logits)
+        final_preds = np.concatenate(preds, axis=0)
+        final_preds = np.argmax(final_preds, axis=1).reshape(-1, 1)
+        print('final_preds:',final_preds)
 
 if __name__ == "__main__":
     batch_size=32

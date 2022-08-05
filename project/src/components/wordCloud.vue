@@ -1,5 +1,5 @@
 <template>
-      <div class="demo-image__placeholder" style="background-color:#013954;width:100%;height:400px">
+      <div class="demo-image__placeholder">
         <div class="block">
           <span class="demonstration"></span>
           <el-image :src="src" style="width: 100%; height: 100%" :fit="contain">
@@ -15,7 +15,7 @@
     export default {
         name: "wordCloud",
       props: [
-        'wordCloudList','active_keyword','active_year'
+        'wordCloudStream','active_keyword','active_timescope'
       ],
       data() {
         return {
@@ -23,10 +23,10 @@
         }
       },
       watch:{     //监听value的变化，进行相应的操作即可
-        "wordCloudList": {
+        "wordCloudStream": {
           immediate:false,
           handler:function(newValue, oldValue) {
-            this.src = 'data:image/png;base64,' + this.wordCloudList[this.active_keyword][this.active_year];
+            this.src = 'data:image/png;base64,' + this.wordCloudStream[this.active_keyword]['24h'];
             //console.log(typeof newValue)
           },
         },
@@ -34,15 +34,17 @@
           immediate:false,
           handler:function(newValue, oldValue) {
             let tempStr = newValue;
-            this.src = 'data:image/png;base64,' + this.wordCloudList[this.active_keyword][this.active_year];
+            console.log('!!!!!!')
+            console.log(this.wordCloudStream)
+            this.src = 'data:image/png;base64,' + this.wordCloudStream[this.active_keyword]['24h'];
             //console.log(typeof newValue)
           },
         },
-        "active_year": {
+        "active_timescope": {
           immediate:false,
           handler:function(newValue, oldValue) {
             let tempStr = newValue;
-            this.src = 'data:image/png;base64,' + this.wordCloudList[this.active_keyword][this.active_year];
+            this.src = 'data:image/png;base64,' + this.wordCloudStream[this.active_keyword]['24h'];
             //console.log(typeof newValue)
           },
         }

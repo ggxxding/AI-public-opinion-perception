@@ -1,4 +1,4 @@
-<template>
+map<template>
   <div>
 <!--    <el-row>-->
 <!--      <el-col :span="24">-->
@@ -9,33 +9,41 @@
       <el-col :span="7">
         <div class="overview panel">
           <div class="inner">
-            <div  class="item" >
-              <h4 >2,190</h4>
-              <span >
-                <i class="icon-dot" style="color: #006cff"></i>
-                <a href="javascript:;" :class="{active:active_all}" @click="click_all">数据总数</a>
-              </span>
+            <div class="filter">
+              <a href="javascript:;" :class="{active:active_24h}" @click="click_24h">24小时</a>
+              <a href="javascript:;" :class="{active:active_30d}" @click="click_30d">30天</a>
+              <a href="javascript:;" :class="{active:active_90d}" @click="click_90d">90天</a>
+              <a href="javascript:;" :class="{active:active_365d}" @click="click_365d">365天</a>
             </div>
-            <div   class="item">
-              <h4>190</h4>
-              <span>
-                <i class="icon-dot" style="color: #6acca3"></i>
+            <div class="data">
+              <div  class="item" >
+                <h4 >{{this.countDict['人工智能'][this.active_timescope]}}</h4>
+                <span >
+                <i class="icon-dot" style="color: #006cff"></i>
                 <a href="javascript:;" :class="{active:active_AI}" @click="click_AI">人工智能</a>
               </span>
-            </div>
-            <div class="item">
-              <h4>3,001</h4>
-              <span>
+              </div>
+              <div   class="item">
+                <h4>{{this.countDict['人脸识别'][this.active_timescope]}}</h4>
+                <span>
                 <i class="icon-dot" style="color: #6acca3"></i>
                 <a href="javascript:;" :class="{active:active_face}" @click="click_face">人脸识别</a>
               </span>
-            </div>
-            <div  class="item">
-              <h4>108</h4>
-              <span>
-                <i class="icon-dot" style="color: #ed3f35"></i>
-                <a href="javascript:;" :class="{active:active_other}" @click="click_other">其他</a>
+              </div>
+              <div class="item">
+                <h4>{{this.countDict['智慧医疗'][this.active_timescope]}}</h4>
+                <span>
+                <i class="icon-dot" style="color: #6acca3"></i>
+                <a href="javascript:;" :class="{active:active_medical}" @click="click_medical">智慧医疗</a>
               </span>
+              </div>
+              <div  class="item">
+                <h4>{{this.countDict['随申码'][this.active_timescope]}}</h4>
+                <span>
+                <i class="icon-dot" style="color: #ed3f35"></i>
+                <a href="javascript:;" :class="{active:active_health_code}" @click="click_health_code">随申码</a>
+              </span>
+              </div>
             </div>
           </div>
         </div>
@@ -43,13 +51,22 @@
           <div class="inner">
             <div class="caption">
             <h3 >时间统计</h3>
+              <a  href="javascript:;" :class="{active:active_2022}" @click="click_2022">2022</a>
               <a  href="javascript:;" :class="{active:active_2021}" @click="click_2021">2021</a>
-              <a  href="javascript:;" :class="{active:active_2020}" @click="click_2020">2020</a>
-              <a href="javascript:;" :class="{active:active_2019}" @click="click_2019">2019</a>
+              <a href="javascript:;" :class="{active:active_2020}" @click="click_2020">2020</a>
               <a href="javascript:;" :class="{active:active_earlier}" @click="click_earlier">更早</a>
             </div>
             <div class="chart" >
               <lineChart :lineData="lineData" :active_keyword="active_keyword" :active_year="active_year" :style="{height:0.09*screenWidth+'px' ,width:'100%'}"></lineChart>
+            </div>
+          </div>
+        </div>
+        <div class="clusterGraph panel">
+          <div class="inner">
+            <h3>聚类结果(24小时)</h3>
+            <div class="chart">
+              <clusterGraph :clusterData="clusterData" :active_keyword="active_keyword" :active_timescope="active_timescope" :style="{height:0.257*screenWidth+'px' ,width:'100%'}">
+              </clusterGraph>
             </div>
           </div>
         </div>
@@ -61,7 +78,7 @@
         <div class="map">
           <div class="chart">
             <div class="geo">
-              <echarts :mapData="mapData" :active_keyword="active_keyword" :active_year="active_year" :style='{height: 0.3025*screenWidth+"px"}'></echarts>
+              <echarts :mapData="mapData" :active_keyword="active_keyword" :active_timescope="active_timescope"  :active_year="active_year" :style='{height: 0.3025*screenWidth+"px"}'></echarts>
             </div>
           </div>
         </div>
@@ -69,7 +86,7 @@
           <div class="inner">
             <h3>全国微博数量统计</h3>
             <div class="chart">
-              <barData class="bar" :barData="barData" :active_keyword="active_keyword" :active_year="active_year"   :style="{height:0.085*screenWidth+'px' ,width:'100%'}"></barData>
+              <barData class="bar" :barData="barData" :active_keyword="active_keyword" :active_timescope="active_timescope" :active_year="active_year"   :style="{height:0.085*screenWidth+'px' ,width:'100%'}"></barData>
             </div>
           </div>
         </div>
@@ -78,12 +95,12 @@
         <div class="sentiment panel">
           <div class="inner">
             <h3>情感分析</h3>
-            <sentiment :sentiment="sentimentResponse" :style='{height: 0.2225*screenWidth+"px"}'></sentiment>
+            <sentiment :sentiment="sentimentResponse" :active_keyword="active_keyword" :active_timescope="active_timescope" :style='{height: 0.2025*screenWidth+"px"}'></sentiment>
           </div>
         </div>
         <div class="word_cloud panel">
           <div class="inner">
-            <wordCloud :wordCloudList="wordCloudList" :active_keyword="active_keyword" :active_year="active_year"  :style='{height: 0.1525*screenWidth+"px"}'></wordCloud>
+            <wordCloud :wordCloudStream="wordCloudStream" :active_keyword="active_keyword"  :active_timescope="active_timescope"  :style='{height: 0.1925*screenWidth+"px"}'></wordCloud>
           </div>
         </div>
       </el-col>
@@ -131,53 +148,82 @@
   import wordCloud from './wordCloud';
   import lineChart from './lineChart';
   import barData from './barData';
+  import clusterGraph from './clusterGraph';
 
 export default {
   name: 'HelloWorld',
   data () {
     return {
+      timer:"",
       screenWidth: document.documentElement.clientWidth,
       url:"http://192.168.71.214:5000/",
       msg: 'Welcome to Your Vue.js App',
       formInline: {
         keyword: '',
       },
-      mapData:{'人工智能':{'y2021':[{'name':'上海',value:'999'}]}},
+      countDict:{
+        '人工智能':{'24h':1},
+        '人脸识别':{'24h':1},
+        '智慧医疗':{'24h':1},
+        '随申码':{'24h':1},
+      },
+      mapData:{'人脸识别':{'24h':[{'name':'上海',value:'999'}]}},
       sentimentResponse:[{'name':'pos','value':50},{'name':'neg','value':50}],
       picurl:null,
       lineData:{
-        '人工智能': {
-          'y2021': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          'y2020': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-          'y2019': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        '人脸识别': {
+          '2022': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          '2021': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          '2020': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           'earlier': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         }
       },
       barData:{
         'data': {
-          '人工智能': {
-            'y2021': [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-            'y2020': [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            'y2019': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          '人脸识别': {
+            '24h': [0, 1, 1, 1, 2, 3, 4, 5, 6, 0, 0, 1, 0],
+            '2021': [0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            '2020': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             'earlier': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           },
         },
         'cities': {
-          '人工智能':{
-            'y2021':['上海', '上海', '上海', '上海', '上海', '', '……', '', '上海', '上海', '上海', '上海', '上海'],
+          '人脸识别':{
+            '24h':['上海', '上海', '上海', '上海', '上海', '', '……', '', '上海', '上海', '上海', '上海', '上海'],
         }
     }
       },
-      active_year: 'y2021',
-      active_keyword: '人工智能',
-      active_2021:true,
+      wordCloudStream:{
+        '人脸识别':{
+          '24h': 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
+        }
+      },
+
+      clusterData:{
+        '人脸识别':{
+          '24h':{
+            'nodes':[{'id':'c','name':'c','category':'a','value':77,"symbolSize": 7,}],
+            'links':[],
+            'categories':[{'name':'a'},{'name':'b'}],
+          }
+        }
+      },
+
+      active_timescope: '24h',
+      active_year: '2022',
+      active_keyword: '人脸识别',
+      active_24h:true,
+      active_30d:false,
+      active_90d:false,
+      active_365d:false,
+      active_2022:true,
+      active_2021:false,
       active_2020:false,
-      active_2019:false,
       active_earlier:false,
-      active_all:false,
-      active_AI:true,
-      active_face:false,
-      active_other:false,
+      active_AI:false,
+      active_face:true,
+      active_medical:false,
+      active_health_code:false,
     }
   },
   mounted(){
@@ -193,39 +239,59 @@ export default {
     };
     //this.timer();
     this.loadWeiboData();
+    this.timer = setInterval(this.loadWeiboData,20000)
+  },
+  beforeDestroy () {
+    clearInterval(this.timer);
   },
   methods:{
+    click_24h(){
+      this.active_timescope= '24h',
+        this.active_24h=true;this.active_30d=false;this.active_90d=false;this.active_365d=false;
+    },
+    click_30d(){
+      this.active_timescope = '30d',
+        this.active_24h=false;this.active_30d=true;this.active_90d=false;this.active_365d=false;
+    },
+    click_90d(){
+      this.active_timescope = '90d',
+        this.active_24h=false;this.active_30d=false;this.active_90d=true;this.active_365d=false;
+    },
+    click_365d(){
+      this.active_timescope =  '365d',
+        this.active_24h=false;this.active_30d=false;this.active_90d=false;this.active_365d=true;
+    },
+    click_2022(){
+      this.active_year= '2022',
+      this.active_2022=true;this.active_2021=false;this.active_2020=false;this.active_earlier=false;
+    },
     click_2021(){
-      this.active_year= 'y2021',
-      this.active_2021=true;this.active_2020=false;this.active_2019=false;this.active_earlier=false;
+      this.active_year = '2021',
+      this.active_2022=false;this.active_2021=true;this.active_2020=false;this.active_earlier=false;
     },
     click_2020(){
-      this.active_year = 'y2020',
-      this.active_2021=false;this.active_2020=true;this.active_2019=false;this.active_earlier=false;
-    },
-    click_2019(){
-      this.active_year = 'y2019',
-      this.active_2021=false;this.active_2020=false;this.active_2019=true;this.active_earlier=false;
+      this.active_year = '2020',
+      this.active_2022=false;this.active_2021=false;this.active_2020=true;this.active_earlier=false;
     },
     click_earlier(){
       this.active_year =  'earlier',
-      this.active_2021=false;this.active_2020=false;this.active_2019=false;this.active_earlier=true;
-    },
-    click_all(){
-      this.active_keyword= '全部',
-        this.active_all=true;this.active_AI=false;this.active_face=false;this.active_other=false;
+      this.active_2022=false;this.active_2021=false;this.active_2020=false;this.active_earlier=true;
     },
     click_AI(){
       this.active_keyword = '人工智能',
-        this.active_all=false;this.active_AI=true;this.active_face=false;this.active_other=false;
+        this.active_AI=true;this.active_face=false;this.active_medical=false;this.active_health_code=false;
     },
     click_face(){
       this.active_keyword = '人脸识别',
-        this.active_all=false;this.active_AI=false;this.active_face=true;this.active_other=false;
+        this.active_AI=false;this.active_face=true;this.active_medical=false;this.active_health_code=false;
     },
-    click_other(){
-      this.active_keyword =  '其他',
-        this.active_all=false;this.active_AI=false;this.active_face=false;this.active_other=true;
+    click_medical(){
+      this.active_keyword =  '智慧医疗',
+        this.active_AI=false;this.active_face=false;this.active_medical=true;this.active_health_code=false;
+    },
+    click_health_code(){
+      this.active_keyword= '随申码',
+        this.active_AI=false;this.active_face=false;this.active_medical=false;this.active_health_code=true;
     },
     timer(){
       var index = 0;
@@ -269,11 +335,16 @@ export default {
         headers: {'Content-Type': 'multipart/form-data'}
       }).then(res=>{
         console.log(res.data);
+        this.countDict = res.data['countDict'];
         this.mapData=res.data['cityList'];
         this.lineData = res.data['timeList'];
         this.barData = res.data['barData'];
         this.wordCloudList = res.data['wordCloudList']
+        this.wordCloudStream = res.data['wordCloudStream']
 
+        this.clusterData = res.data['clusterResult']
+        this.sentimentResponse = res.data['sentiment_result']
+        console.log(this.wordCloud)
       }).catch((error)=>{
         console.error(error);
       })
@@ -288,6 +359,7 @@ export default {
     wordCloud,
     lineChart,
     barData,
+    clusterGraph,
   },
   watch:{     //监听value的变化，进行相应的操作即可
     screenHeight (val) {

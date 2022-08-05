@@ -12,12 +12,13 @@ from selenium.webdriver.common.action_chains import ActionChains
 from time import sleep
 from random import choice
 import re
+
 from urllib.parse import urlencode
 #人工智能: 11-20-16 face:01-15-17
 parser = argparse.ArgumentParser(description='description')
 parser.add_argument('-k','--keyword', type=str, default='人工智能',help='searching keyword')
-parser.add_argument('-s','--start', type=str, default='2021-11-20-16',help='start time, format: yyyy-mm-dd-h(2021-01-01-0)')
-parser.add_argument('-e','--end', type=str, default='2022-01-01-0',help='end time, format: yyyy-mm-dd-h(2021-12-31-23)')
+parser.add_argument('-s','--start', type=str, default='2022-06-01-05',help='start time, format: yyyy-mm-dd-h(2021-01-01-0)')
+parser.add_argument('-e','--end', type=str, default='2022-06-01-06',help='end time, format: yyyy-mm-dd-h(2021-12-31-23)')
 args = parser.parse_args()
 
 myclient = pymongo.MongoClient('mongodb://192.168.71.214:27017/')
@@ -27,14 +28,25 @@ mycol = mydb['selenium_weibo']
 uid_loc_dict={}
 for i in mycol.find({},{'uid':1,'location':1}):
     uid_loc_dict[str(i['uid'])]=i['location']
+# tem={'text1':'阿萨阿斯顿阿斯顿地方','text1':'aaa'}
+# a=mycol.update_one({'label':'人工智能3332','text2':'aaaa'},
+#                  {'$setOnInsert':tem,
+#                   '$set':{'text4':'text42'}},
+#                  upsert=True)
+# print(a.raw_result)
+# print(a.raw_result['updatedExisting'])
+#
+# quit()
 
 delay=1/0.3 #0.3次请求/秒
 driver = webdriver.Chrome(r'C:\Users\sstl\Documents\GitHub\chromedriver.exe')
 driver.maximize_window()
-driver_window1 = driver.current_window_handle
-driver.execute_script('window.open("https://www.baidu.com/")')
-driver_window2 = driver.window_handles[1]
-driver.switch_to.window(driver_window1)
+driver2 = webdriver.Chrome(r'C:\Users\sstl\Documents\GitHub\chromedriver.exe')
+driver2.maximize_window()
+# driver_window1 = driver.current_window_handle
+# driver.execute_script('window.open("https://www.baidu.com/")')
+# driver_window2 = driver.window_handles[1]
+# driver.switch_to.window(driver_window1)
 wait = ui.WebDriverWait(driver, 5)  # 设定最长等待加载时间为10秒
 base_url='https://s.weibo.com/weibo?'
 headers = {
@@ -150,31 +162,34 @@ def get_location(uid):
     except requests.ConnectionError as e:
         print('ConnectionError', e.args)
 
-def get_location_from_page(uid):
+def get_location_from_page(uid, href):
     location = uid_loc_dict.get(str(uid))
     if location:
         return location
-    driver.switch_to.window(driver_window2)
-    url='https://weibo.com/'+str(uid)
+    # driver.switch_to.window(driver_window2)
+    # url='https://weibo.com/'+str(uid)
+    url = href
     location="未知"
     for i in range(5):
         try:
-            driver.get(url)
-            wait.until(lambda driver: driver.find_element_by_class_name("more_txt"))
+            driver2.get(url)
+            wait.until(lambda driver: driver2.find_element_by_class_name("more_txt"))
             break
         except:
             time.sleep(3)
             log.logger.info('等待3s,刷新url: %s' % (url))
             pass
-    ficon_cd_place = driver.find_elements_by_class_name('ficon_cd_place')
+    ficon_cd_place = driver2.find_elements_by_class_name('ficon_cd_place')
     if ficon_cd_place:
         location = ficon_cd_place[0].find_element_by_xpath('../..').text.replace('2','').replace('\n','')
-    driver.switch_to.window(driver_window1)
+        print(location)
+    # driver.switch_to.window(driver_window1)
     uid_loc_dict[str(uid)] = location
     return location
 
 def login():
     driver.get('https://weibo.com/login.php')
+    driver2.get('https://weibo.com/login.php')
     wait.until(lambda driver: driver.find_element_by_xpath("//span[@node-type='submitStates']"))
     # driver.find_element_by_id('loginname').send_keys('1')
     # driver.find_element_by_name('password').send_keys('2')
@@ -188,11 +203,13 @@ def search(keyword, start, end):
     # end   = '2021-12-30'
     log.logger.info('Begin searching from: %s to %s'%(start,end))
     one_hour = datetime.timedelta(hours=1)
+    one_day  = datetime.timedelta(days=1)
     start_time = datetime.datetime.strptime(start, '%Y-%m-%d-%H')
     end_time = datetime.datetime.strptime(end, '%Y-%m-%d-%H')
     temp_time = start_time
     while((end_time-temp_time-one_hour).days>-1):
         timescope = temp_time.strftime('%Y-%m-%d-%H')+':'+(temp_time+one_hour).strftime('%Y-%m-%d-%H')
+        # timescope = temp_time.strftime('%Y-%m-%d-%H') + ':' + (temp_time + one_day).strftime('%Y-%m-%d-%H')
         params = {
             'q': keyword,
             'typeall': 1,
@@ -202,7 +219,6 @@ def search(keyword, start, end):
             'page': 1,
         }
         url = base_url + urlencode(params)
-
         for i in range(10):
             try:
                 driver.get(url)
@@ -218,22 +234,12 @@ def search(keyword, start, end):
         page_num = max(len(driver.find_elements_by_xpath('//ul[@class="s-scroll"]/li')),1)
         log.logger.info('%s 的总页数: %s'%(timescope, str(page_num)))
         time.sleep(1)
-        # card-feed
-        #     content
-        #         div class="info"
-        #                 class="name"
-        #         p[node-type="feed_list_content"]
-        #             a[action-type="fl_unfold"]#展开全文
-        #         p[node-type="feed_list_content_full"]
-        #         div class="card-comment"
-        #             a class="name"
-        #             p node-type="feed_list_content"
-        #                a[action - type = "fl_unfold"]  # 展开全文
-        #             p node-type="feed_list_content_full"
+
         for page in range(page_num):#[0,49]
             parse_page(timescope = timescope,page = page,keyword = keyword)
 
         temp_time = temp_time+ one_hour
+        # temp_time = temp_time + one_day
 def parse_page(timescope, page, keyword):
     print(timescope, page, keyword)
     params = {
@@ -267,8 +273,8 @@ def parse_page(timescope, page, keyword):
             name = card_info[0].find_elements_by_class_name('name')
             if name:
                 wb1['name'] = name[0].text
-                name_href = name[0].get_attribute('href')
-                uid1 = re.sub(r'(.*)weibo.com(\D*)(\d+)(\D*)(.*)', r'\3', name_href)
+                name_href1 = name[0].get_attribute('href')
+                uid1 = re.sub(r'(.*)weibo.com(\D*)(\d+)(\D*)(.*)', r'\3', name_href1)
                 wb1['uid'] = uid1
                 # wb1['location'] = get_location_from_page(wb1['uid'])
 
@@ -281,15 +287,22 @@ def parse_page(timescope, page, keyword):
                 unfold_button[0].click()
                 content_full = card_content[0].find_elements_by_xpath('../p[@node-type="feed_list_content_full"]')[
                     0].text.replace('\n', '').replace('收起全文d', '')
-                wb1['longText'] = re.sub(r'(.*)(L.*的微博视频)', r'\1', content_full)
+                wb1['longText'] = re.sub(r'(.*)(L.*的微博视频)', r'\1', content_full.strip())
+                print(wb1['longText'])
                 wb1['isLongText'] = True
+
             else:
-                wb1['text'] = re.sub(r'(.*)(L.*的微博视频)', r'\1', card_content[0].text.split('//')[0].replace('\n', ''))
+                wb1['text'] = re.sub(r'(.*)(L.*的微博视频)', r'\1', card_content[0].text.split('//')[0].replace('\n', '').strip())
+                print(wb1['text'])
                 wb1['isLongText'] = False
         card_time = card.find_elements_by_xpath('./div[@class="content"]/p[@class="from"]/a[@target="_blank"]')
         if card_time:
             if '年' in card_time[0].text:
                 wb1['created_at'] = re.sub(r'(.*)年(.*)月(.*)日 (.*)', r'\1/\2/\3 \4', card_time[0].text)
+            elif '今天' in card_time[0].text:
+                wb1['created_at'] = datetime.datetime.now().strftime('%Y/%m/%d') + ' ' + re.sub(r'今天(.*)',
+                                                                                          r'\1',
+                                                                                          card_time[0].text)
             else:
                 wb1['created_at'] = datetime.datetime.now().strftime('%Y') + '/' + re.sub(r'(.*)月(.*)日 (.*)',
                                                                                           r'\1/\2 \3',
@@ -301,8 +314,8 @@ def parse_page(timescope, page, keyword):
             name = card_comment[0].find_elements_by_class_name('name')
             if name:
                 wb2['name'] = name[0].text[1:]
-                name_href = name[0].get_attribute('href')
-                uid2 = re.sub(r'(.*)weibo.com(\D*)(\d+)(\D*)(.*)', r'\3', name_href)
+                name_href2 = name[0].get_attribute('href')
+                uid2 = re.sub(r'(.*)weibo.com(\D*)(\d+)(\D*)(.*)', r'\3', name_href2)
                 wb2['uid'] = uid2
                 # wb2['location'] = get_location_from_page(uid2)
 
@@ -314,15 +327,20 @@ def parse_page(timescope, page, keyword):
                         card_comment_content_full = \
                         card_comment_content[0].find_elements_by_xpath('../p[@node-type="feed_list_content_full"]')[
                             0].text.replace('\n', '').replace('收起全文d', '')
-                        wb2['longText'] = re.sub(r'(.*)(L.*的微博视频)', r'\1', card_comment_content_full)
+                        wb2['longText'] = re.sub(r'(.*)(L.*的微博视频)', r'\1', card_comment_content_full.strip())
                         wb2['isLongText'] = True
                     else:
-                        wb2['text'] = re.sub(r'(.*)(L.*的微博视频)', r'\1', card_comment_content[0].text.replace('\n', ''))
+                        wb2['text'] = re.sub(r'(.*)(L.*的微博视频)', r'\1', card_comment_content[0].text.replace('\n', '').strip())
                         wb2['isLongText'] = False
                 comment_time = card_comment[0].find_elements_by_xpath('.//p[@class="from"]/a[@target="_blank"]')
                 if comment_time:
                     if '年' in comment_time[0].text:
                         wb2['created_at'] = re.sub(r'(.*)年(.*)月(.*)日 (.*)', r'\1/\2/\3 \4', comment_time[0].text)
+                    elif '今天' in card_time[0].text:
+                        wb1['created_at'] = datetime.datetime.now().strftime('%Y/%m/%d') + ' ' + re.sub(r'今天(.*)',
+                                                                                                        r'\1',
+                                                                                                        card_time[
+                                                                                                            0].text)
                     else:
                         wb2['created_at'] = datetime.datetime.now().strftime('%Y') + '/' + re.sub(r'(.*)月(.*)日 (.*)',
                                                                                                   r'\1/\2 \3',
@@ -330,22 +348,43 @@ def parse_page(timescope, page, keyword):
             else:
                 pass
         print('----')
-        if wb1['text'] != '' and keyword in wb1['text'] and not mycol.find_one({'text':wb1['text']}):
-            wb1['location'] = get_location_from_page(wb1['uid'])
-            mycol.insert_one(wb1)
-            print('insert')
-        elif wb1['longText'] != '' and keyword in wb1['longText'] and not mycol.find_one({'longText':wb1['longText']}):
-            wb1['location'] = get_location_from_page(wb1['uid'])
-            mycol.insert_one(wb1)
-            print('insert')
-        if wb2['text'] != '' and keyword in wb2['text'] and not mycol.find_one({'text':wb2['text']}) :
-            wb2['location'] = get_location_from_page(wb2['uid'])
-            mycol.insert_one(wb2)
-            print('insert')
-        elif wb2['longText'] != '' and keyword in wb2['longText'] and not mycol.find_one({'longText':wb2['longText']}):
-            wb2['location'] = get_location_from_page(wb2['uid'])
-            mycol.insert_one(wb2)
-            print('insert')
+        # mycol.update_one({'label': '人工智能1', 'text': '阿萨阿斯顿阿斯顿地方'},
+        #                  {'$setOnInsert': {'text3': 'text31'},
+        #                   '$set': {'text4': 'text42'}},
+        #                  upsert=True)
+        if wb1['text'] != '' and keyword in wb1['text']:
+            print(name_href1)
+            wb1['location'] = get_location_from_page(wb1['uid'],name_href1)
+            upserted = mycol.update_one({'label':keyword,'text':wb1['text']},
+                             {'$setOnInsert':wb1},
+                             upsert=True
+            )
+            if upserted.raw_result['updatedExisting'] == False:
+                print('insert')
+        elif wb1['longText'] != '' and keyword in wb1['longText']:
+            wb1['location'] = get_location_from_page(wb1['uid'],name_href1)
+            upserted =  mycol.update_one({'label': keyword, 'longText': wb1['longText']},
+                             {'$setOnInsert': wb1},
+                             upsert=True
+                             )
+            if upserted.raw_result['updatedExisting'] == False:
+                print('insert')
+        if wb2['text'] != '' and keyword in wb2['text']  :
+            wb2['location'] = get_location_from_page(wb2['uid'],name_href2)
+            upserted = mycol.update_one({'label': keyword, 'text': wb2['text']},
+                             {'$setOnInsert': wb2},
+                             upsert=True
+                             )
+            if upserted.raw_result['updatedExisting'] == False:
+                print('insert')
+        elif wb2['longText'] != '' and keyword in wb2['longText']:
+            wb2['location'] = get_location_from_page(wb2['uid'],name_href2)
+            upserted = mycol.update_one({'label': keyword, 'longText': wb2['longText']},
+                             {'$setOnInsert': wb2},
+                             upsert=True
+                             )
+            if upserted.raw_result['updatedExisting'] == False:
+                print('insert')
 
 
 def main():

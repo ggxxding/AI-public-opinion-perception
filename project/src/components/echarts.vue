@@ -8,14 +8,15 @@
   import '../../node_modules/echarts/map/js/china.js'; // 引入中国地图数据
   export default {
     name: "echarts",
-    props: ["mapData","active_keyword","active_year"],
+    props: ["mapData","active_keyword","active_timescope","active_year"],
     data() {
       return {
         chart: null,
       };
     },
     mounted() {
-      this.chinaConfigure();
+      var myChart = echarts.init(this.$refs.myEchart);
+      myChart.showLoading();
     },
     beforeDestroy() {
       if (!this.chart) {
@@ -238,6 +239,7 @@
         };
 
         let myChart = echarts.init(this.$refs.myEchart); //这里是为了获得容器所在位置
+        myChart.hideLoading()
         window.onresize = myChart.resize;
         myChart.setOption({ // 进行相关配置
 
@@ -254,8 +256,9 @@
           }, // 鼠标移到图里面的浮动提示框
           dataRange: {
             show: true,
-            min: 0,
-            max: 5000,
+
+            min: this.mapData[this.active_keyword][this.active_timescope][35]['value'],
+            max: this.mapData[this.active_keyword][this.active_timescope][34]['value'],
             text: ['High', 'Low'],
             realtime: true,
             calculable: true,
@@ -368,7 +371,7 @@
                 show: true
               },
               geoIndex:'0',
-              data: this.mapData[this.active_keyword][this.active_year],
+              data: this.mapData[this.active_keyword][this.active_timescope],
             },
 
           ]
@@ -377,10 +380,10 @@
     },
     watch:{     //监听value的变化，进行相应的操作即可
       "mapData": function (newv, oldv) {
-
+        console.log(this.mapData)
         this.chinaConfigure()
       },
-      "active_year" : function (newv, oldv) {
+      "active_timescope" : function (newv, oldv) {
         this.chinaConfigure()
       },
       "active_keyword" : function (newv, oldv) {

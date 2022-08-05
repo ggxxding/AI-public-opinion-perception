@@ -12,7 +12,8 @@
       };
     },
     mounted() {
-      this.setOption();
+      var myChart = echarts.init(this.$refs.myEchart);
+      myChart.showLoading();
     },
     beforeDestroy() {
       if (!this.chart) {
@@ -28,6 +29,7 @@
 
 
         let myChart = echarts.init(this.$refs.myEchart); //这里是为了获得容器所在位置
+        myChart.hideLoading()
         window.onresize = myChart.resize;
         myChart.setOption({
           tooltip: {
@@ -98,7 +100,7 @@
       "lineData": function (newv, oldv) {
         this.setOption()
       },
-      "active_year" : function (newv, oldv) {
+      "active_keyword" : function (newv, oldv) {
         this.setOption()
       },
       "active_year" : function (newv, oldv) {

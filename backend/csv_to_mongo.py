@@ -9,7 +9,7 @@ mycol = mydb['selenium_weibo']
 uid_loc_dict={}
 
 # Index(['label', 'text', 'longText', 'name', 'uid', 'location', 'isLongText','created_at']
-df = pd.read_csv('weibo_220110_2.csv')
+df = pd.read_csv('weibo_220111_face.csv')
 df = df.values
 
 for row in df:
@@ -18,11 +18,11 @@ for row in df:
     created_at = created_at +' '+ row[7].split(' ')[1]
     temp={'label':row[0], 'text':row[1],'longText':row[2],'name':row[3],'uid': str(row[4]),'location':row[5],
           'isLongText':row[6],'created_at':created_at,'from_mac':True}
-    if type(row[1])==str and '人工智能' in row[1] and not mycol.find_one({'text':row[1]}):
+    if type(row[1])==str and '人脸识别' in row[1] and not mycol.find_one({'text':row[1]}):
         print('insert')
         temp['longText']=''
         mycol.insert_one(temp)
-    elif type(row[2])==str and '人工智能' in row[2] and not mycol.find_one({'longText':row[2]}):
+    elif type(row[2])==str and '人脸识别' in row[2] and not mycol.find_one({'longText':row[2]}):
         print('insert')
         temp['text']=''
         mycol.insert_one(temp)

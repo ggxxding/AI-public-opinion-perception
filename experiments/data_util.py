@@ -145,14 +145,14 @@ if __name__ == "__main__":
             scheduler.step()
 
         model.eval()
-        for i,batch in enumerate(val_dataloader):
+        for i,batch2 in enumerate(val_dataloader):
             with torch.no_grad():
-                output = model(batch[0].to(device), token_type_ids=None, attention_mask=(batch[0]>0).to(device), labels=batch[1].to(device))
+                output = model(batch2[0].to(device), token_type_ids=None, attention_mask=(batch2[0]>0).to(device), labels=batch2[1].to(device))
                 loss=output[0]
                 logits=output[1]
                 total_val_loss+=loss.item()
                 logits = logits.detach().cpu().numpy()
-                label_ids = batch[1].to('cpu').numpy()
+                label_ids = batch2[1].to('cpu').numpy()
                 total_eval_accuracy += flat_accuracy(logits, label_ids)
         avg_train_loss = total_loss/len(train_dataloader)
         avg_val_loss = total_val_loss/ len(val_dataloader)

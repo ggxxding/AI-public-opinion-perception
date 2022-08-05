@@ -6,10 +6,13 @@ import os
 import csv
 import json
 import pymongo
+import re
+import datetime
 
 delay=1/0.3
 print(delay)
 base_url = 'https://m.weibo.cn/api/container/getIndex?'
+month_dict={'Jan':1, 'Feb':2, 'Mar':3, 'Apr':4, 'May':5, 'Jun':6, "Jul":7, 'Aug':8, 'Sep':9, 'Oct':10, 'Nov':11 ,'Dec':12}
 
 headers = {
     'Host': 'm.weibo.cn',
@@ -101,10 +104,15 @@ def parse_page(json , label):
             weibo['location']=get_user_location(item)
             print('位置：',weibo['location'])
             weibo['created_at'] = item.get('created_at') #Thu Dec 16 14:51:31 +0800 2021
+            #    re.sub(r'(.*)weibo.com(\D*)(\d+)(\D*)(.*)', r'\3', name_href1)
+            time_ = re.sub(r'^([a-zA-Z]+)\s([a-zA-Z]+)\s([0-9]+)\s([0-9:]+)\s([0-9\+]+)\s([0-9]+)',r'\2 \3 \4 \6',weibo['created_at'])
+            time_ = str(month_dict[time_.split()[0]]) + time_[3:]
+            time_ = datetime.datetime.strptime(time_, '%m %d %H:%M:%S %Y')
+            time_ = datetime.datetime.strftime(time_, '%Y/%m/%d %H:%M')#2022/01/23 21:20
+            weibo['created_at'] = time_
+
             weibo['isLongText'] = item.get('isLongText') #https://m.weibo.cn/statuses/extend?id=4719013772660338
             weibo['longText'] = ''
-            print(weibo['isLongText'])
-            print(weibo['isLongText']==True)
             if weibo['isLongText']==True:
                 try:
                     time.sleep(delay)
@@ -114,6 +122,10 @@ def parse_page(json , label):
                         print(weibo['id'])
                         print(response.json())
                         longText = response.json().get('data').get('longTextContent')
+
+                        pattern = re.compile(r'<[^>]+>', re.S)
+                        longText = pattern.sub('', longText)
+
                         weibo['longText'] = longText
                 except requests.ConnectionError as e:
                     print('Error', e.args)
@@ -223,78 +235,48 @@ def get_containerid(uid):
     except requests.ConnectionError as e:
         print('Error', e.args)
 
-def main(keyword, path='article.csv'):
+def main(keyword):
+    myclient = pymongo.MongoClient('mongodb://192.168.71.214:27017/')
+    mydb = myclient['spider_weibo']
+    collist = mydb.list_collection_names()
+    mycol = mydb['selenium_weibo']#'id,text,label,location,created_at'
+
     title = keyword
-    path = path
-    if os.path.exists(path):
-        print('删除:', path)
-        os.remove(path)
+
     item_list = ['id', 'uid', 'text', 'label', 'location' ,'created_at' , 'isLongText', 'longText']
-    s = SaveCSV()
-    for page in range(1, 10):  # 循环页面
+    #Mon Dec 27 14:58:20 +0800 2021
+    for page in range(0, 100):  # 循环页面
         try:
             time.sleep(delay)  # 设置睡眠时间，防止被封号
             json = get_page(page, title)
             results = parse_page(json, title)
-            if requests == None:
-                continue
+            print('results:',results)
+
             for result in results:
-                if result == None:
-                    continue
-                s.save(item_list, path, result)
+                if result['isLongText'] == False and keyword in result['text']:
+                    upserted = mycol.update_one({'label':keyword,'text':result['text']},
+                                                {'$setOnInsert':result},
+                                                upsert = True)
+                    if upserted.raw_result['updatedExisting'] == False:
+                        print('insert:', result)
+                    else:
+                        print('not insert:', result)
+                elif result['isLongText'] == True and keyword in result['longText']:
+                    upserted = mycol.update_one({'label':keyword,'longText':result['longText']},
+                                                {'$setOnInsert':result},
+                                                upsert = True)
+                    if upserted.raw_result['updatedExisting'] == False:
+                        print('insert:', result)
+                    else:
+                        print('not insert:' ,result)
+
         except TypeError as e:
             print("格式错误，跳过当前页")
             print(e)
             continue
-
-
-    cities=[]
-    with open(path) as f:
-        f_csv = csv.reader(f)
-        for row in f_csv:
-            print(row)
-            print(row[3].split(' ')[0])
-            cities.append(row[3].split(' ')[0])
-    cityName=set(cities)
-    cityDict={}
-    for city in cityName:
-        cityDict[city]=0
-    for city in cities:
-        cityDict[city]+=1
 
 
     return cityDict
 
 if __name__ == '__main__':
-    myclient = pymongo.MongoClient('mongodb://localhost:27017/')
-    mydb = myclient['spider_weibo']
-    collist = mydb.list_collection_names()
-    mycol = mydb['spider_weibo']#'id,text,label,location,created_at'
-
-
-
-    title = input("请输入搜索关键词：")
-    path = "article.csv"
-    item_list = ['id', 'uid','text', 'label','location', 'created_at' , 'isLongText', 'longText']
-    s = SaveCSV()
-    for page in range(0,200):#循环页面
-        try:
-            time.sleep(delay)         #设置睡眠时间，防止被封号
-            json = get_page(page , title )
-            results = parse_page(json , title)
-            if requests == None:
-                continue
-            for result in results:
-                if result == None:
-                    continue
-                s.save(item_list, path , result)
-
-                if result['id'] not in mycol.distinct('id'):#去重
-                    print('write:\n')
-                    print(result['id'])
-                    mycol.insert_one(result)
-
-        except TypeError as e:
-            print("格式错误，跳过当前页")
-            print(e)
-            continue
+    main('人脸识别')
