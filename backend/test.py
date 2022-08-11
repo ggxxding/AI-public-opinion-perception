@@ -80,33 +80,14 @@ class Logger(object):
 log = Logger('selenium_log.log', level='debug')
 base_url='https://s.weibo.com/weibo?'
 
-
-
-# def get_location_from_page(uid, href):
-#     location = uid_loc_dict.get(str(uid))
-#     if location:
-#         print('fanhui!!!')
-#         return location
-#     # driver.switch_to.window(driver_window2)
-#     # url='https://weibo.com/'+str(uid)
-#     url = 'https:' + href +'&is_all=1'
-#     url = url.replace('weibo.com/','weibo.com/u/')
-#     print(url)
-#     location="未知"
-#     page_text = requests.get(
-#         url=url,
-#         headers=headers).text
-#     print(page_text)
-#     tree = etree.HTML(page_text)
-#     ficon_cd_place = tree.xpath('//*[@class="ficon_cd_place"]')
-#     print(ficon_cd_place)
-#     print(len(ficon_cd_place))
-#     if ficon_cd_place:
-#         location = ficon_cd_place[0].xpath('../..').text
-#         print(location)
-#     # driver.switch_to.window(driver_window1)
-#     uid_loc_dict[str(uid)] = location
-#     return location
+def get_latest_time(label):
+    #2022/04/01 01:31
+    max = datetime.datetime(1,1,1,1,1,1)
+    for i in mycol.find({'label':label},{'created_at':1}):
+        current = datetime.datetime.strptime( i['created_at'],'%Y/%m/%d %H:%M')
+        if current>max:
+            max = current
+    return max
 
 def init_browser():
     options = webdriver.ChromeOptions()
@@ -695,7 +676,7 @@ def job():
     end = datetime.datetime.now().strftime('%Y-%m-%d-%H')
     one_hour = datetime.timedelta(hours=1)
     start = datetime.datetime.strptime(end, '%Y-%m-%d-%H')-one_hour
-    start = start.strftime('%Y-%m-%d-%H')
+    # start = start.strftime('%Y-%m-%d-%H')
     print('开始定时任务',datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'))
     chrome.refresh()
     time.sleep(10)
@@ -726,7 +707,13 @@ def job():
     #     headers['Cookie']='SUB=' + sub
 
     for keyword in ['人工智能','人脸识别','随申码','智慧医疗']:
-        search(keyword,start,end) #cookies
+        latest_time = get_latest_time(keyword)
+        if latest_time < start:
+            latest_time = latest_time.strftime('%Y-%m-%d-%H')
+            search(keyword,latest_time,end) #cookies
+        else:
+            latest_time = start.strftime('%Y-%m-%d-%H')
+            search(keyword, latest_time,end)
     loadWeiboData()
     print('定时任务结束')
 

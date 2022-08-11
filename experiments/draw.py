@@ -3,22 +3,28 @@ import pandas as pd
 import matplotlib.dates as mdates
 import datetime
 
-df = pd.read_csv('mongo_data.csv' ,sep=' ')
+df = pd.read_csv(r'C:\Users\sstl\Documents\GitHub\mongo_data.csv' ,sep=' ')
+# text sentiment created_at
+times = pd.date_range('2022-04-01',periods = 30, freq='1d')
+sent_values = [0 for i in range(30)]
 df = df.values
 for data in df:
     if data[2][:4] == '2022':
-        print(data[2])
+        if data[2][5:7] == '04':
+            if data[1] == 'positive':
+
+                sent_values[int(data[2][8:10])-1]+=1
+            else:
+                sent_values[int(data[2][8:10])-1]-=1
+
     # datetime.datetime.strptime()
 
 
-times = pd.date_range('2015-10-06', periods=500, freq='10min')
-print(times)
-print(type(times))
 fig, ax = plt.subplots(1)
 fig.autofmt_xdate() #自动旋转x坐标
-plt.plot(df['created_at'].values[:100], range(len(df['created_at'].values[:100])))
+plt.plot(times, sent_values)
+#
+# xfmt = mdates.DateFormatter('%d-%m-%y %H:%M')
+# ax.xaxis.set_major_formatter(xfmt)
 
-
-xfmt = mdates.DateFormatter('%d-%m-%y %H:%M')
-ax.xaxis.set_major_formatter(xfmt)
 plt.show()
