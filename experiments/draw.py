@@ -3,14 +3,15 @@ import pandas as pd
 import matplotlib.dates as mdates
 import datetime
 
-df = pd.read_csv(r'C:\Users\sstl\Documents\GitHub\mongo_data.csv' ,sep=' ')
+df = pd.read_csv(r'../../mongo_data.csv' ,sep=' ')
 # text sentiment created_at
-times = pd.date_range('2022-04-01',periods = 30, freq='1d')
+times = pd.date_range('2022-01-01',periods = 181, freq='1d')
+print(times[-1])
 sent_values = [0 for i in range(30)]
 df = df.values
 for data in df:
     if data[2][:4] == '2022':
-        if data[2][5:7] == '04':
+        if data[2][5:7] in ['01','02','03','04','05','06']:
             if data[1] == 'positive':
 
                 sent_values[int(data[2][8:10])-1]+=1
