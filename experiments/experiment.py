@@ -20,7 +20,7 @@ mycol = mydb['selenium_weibo']
 # df.to_csv('site.csv')
 
 uid,text,sentiment,created_at=[],[],[],[]
-for i in mycol.find({'label':'随申码1','longText':''},{'text':1,'sentiment':1,'created_at':1}):
+for i in mycol.find({'label':'随申码','longText':''},{'text':1,'sentiment':1,'created_at':1}):
     text.append(i['text'])
     sentiment.append(i['sentiment'])
     created_at.append(i['created_at'])
