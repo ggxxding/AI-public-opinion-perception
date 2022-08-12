@@ -25,7 +25,7 @@ for data in df:
 
 fig, ax = plt.subplots(1)
 fig.autofmt_xdate() #自动旋转x坐标
-plt.plot(times[31:60], sent_values[31:60])
+plt.plot(times[60:120], sent_values[60:120])
 #
 # xfmt = mdates.DateFormatter('%d-%m-%y %H:%M')
 # ax.xaxis.set_major_formatter(xfmt)

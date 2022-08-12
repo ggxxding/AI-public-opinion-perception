@@ -396,7 +396,7 @@ def parse_page(timescope, page, keyword):
             print(wb1['text'])
             wb1['isLongText'] = False
         # card_time = card.find_elements_by_xpath('./div[@class="content"]/p[@class="from"]/a[@target="_blank"]')
-        card_time = card.xpath('./div[@class="content"]/p[@class="from"]/a[@target="_blank"]')
+        card_time = card.xpath('./div[@class="content"]/*[@class="from"]/a[@target="_blank"]')
         if card_time:
             if '年' in card_time[0].text:
                 wb1['created_at'] = re.sub(r'(.*)年(.*)月(.*)日 (.*)', r'\1/\2/\3 \4', card_time[0].text.strip())
