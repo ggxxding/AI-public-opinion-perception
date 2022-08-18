@@ -1,4 +1,5 @@
 # AI-public-opinion-perception
+python3.8
 
 安装哈工大LTP(4.1.5post2): pip install ltp
 

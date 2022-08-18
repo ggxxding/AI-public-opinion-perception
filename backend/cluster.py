@@ -2,11 +2,10 @@ import numpy as np
 
 import gensim
 import spacy
-
-
+import jieba
 import re
-from ltp import LTP
-ltp = LTP()
+# from ltp import LTP
+# ltp = LTP()
 import pymongo
 import pandas as pd
 
@@ -19,15 +18,15 @@ topic_serial=[]
 text_vec = []
 
 # word_vectors = gensim.models.KeyedVectors.load_word2vec_format('res/word_vectors.bin', binary = True)
-nlp = spacy.load('zh_core_web_lg')
+nlp = spacy.load('zh_core_web_md')# lg on 214
 word_vectors = nlp.vocab
 print('loaded')
 #文本 -> 向量
 def preprocess(text):
     ''''''
     sen_vec = np.zeros((1,300))
-    segment,_ = ltp.seg([text]) #return = [['word1','word2'...]]
-    # segment = jieba.lcut(text)
+    # segment,_ = ltp.seg([text]) #return = [['word1','word2'...]]
+    segment = jieba.lcut(text)
 
     valid_word_cnt = 0
     for word in segment[0]:
@@ -88,7 +87,6 @@ def main(texts):
         preprocessedData.append(sentence)
         # print(topic_serial)#长度与data相同，表示对应data中数据所属簇
         # print('topic_count: ',topic_cnt)#簇数量
-
     # sorted(zip(a,b),key = lambda x:x[0])
     sorted_text = sorted(zip(topic_serial,preprocessedData), key = lambda x:x[0])
     df = pd.DataFrame(sorted_text,columns=['topic_serial', 'text'])
@@ -98,4 +96,4 @@ def main(texts):
 
 
 if __name__ == '__main__':
-    main()
+    main(['测试','测试测试'])
