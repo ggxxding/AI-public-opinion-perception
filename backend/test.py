@@ -81,7 +81,7 @@ log = Logger('selenium_log.log', level='debug')
 base_url='https://s.weibo.com/weibo?'
 
 def get_latest_time(label):
-    #2022/04/01 01:31
+    #2022/04/01 01:31..
     max = datetime.datetime(1,1,1,1,1,1)
     for i in mycol.find({'label':label},{'created_at':1}):
         current = datetime.datetime.strptime( i['created_at'],'%Y/%m/%d %H:%M')
