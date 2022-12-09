@@ -108,6 +108,7 @@ def loadWeiboData():
 				'2020': [0 for i in range(12)],
 				'earlier': [0 for i in range(12)],
 			}
+			
 			timeList[label] =  temp
 			cityList[label] = {'24h':[],'30d':[], '90d':[], '365d':[]}
 		# now = datetime.datetime.now()..
