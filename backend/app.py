@@ -110,7 +110,7 @@ def loadWeiboData():
 			}
 			timeList[label] =  temp
 			cityList[label] = {'24h':[],'30d':[], '90d':[], '365d':[]}
-		# now = datetime.datetime.now()..
+		# now = datetime.datetime.now()
 		now = datetime.datetime(2022,4,13,0,0,0)
 		for weiboData in mycol.find({},{'label':1,'created_at':1,'location':1,'isLongText':1,'text':1,'longText':1,'sentiment':1}):
 			location = weiboData['location'].split(' ')[0]
