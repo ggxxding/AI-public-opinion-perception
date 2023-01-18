@@ -5,241 +5,33 @@
 </template>
 <script>
   import * as  echarts from "echarts";
-  import china from '../china.json'; // 引入中国地图数据
-
+  import '../../node_modules/echarts/map/js/china.js'; // 引入中国地图数据
   export default {
     name: "echarts",
     props: ["mapData","active_keyword","active_timescope","active_year"],
     data() {
       return {
         chart: null,
-        myChart:"",
-        timer:"",
-        keyword:"人脸识别",
-        timescope:"24h",
-        year:"",
-        option:"map",
       };
     },
     mounted() {
-      echarts.registerMap('china',china)
-      this.myChart = echarts.init(this.$refs.myEchart);
-      this.myChart.showLoading();
+      var myChart = echarts.init(this.$refs.myEchart);
+      myChart.showLoading();
     },
     beforeDestroy() {
-      if (!this.myChart) {
+      if (!this.chart) {
         return;
       }
-      this.myChart.dispose();
-      this.myChart = null;
-
+      this.chart.dispose();
+      this.chart = null;
     },
     methods: {
-      switch_timescope(){
-        if(this.timescope=='24h' && this.option == 'bar'){
-          this.timescope = '30d';
-        }else if (this.timescope == '30d' && this.option == 'bar'){
-          this.timescope = '90d';
-        }else if (this.timescope =='90d' && this.option == 'bar'){
-          this.timescope = '365d';
-        }else if (this.timescope =='365d' && this.option == 'bar'){
-          this.timescope = '24h';
-        }
-      },
-      switch_keyword(){
-        console.log('switch')
-        if(this.keyword=='人工智能'){
-          this.keyword = '人脸识别';
-        }else if (this.keyword == '人脸识别'){
-          this.keyword = '智慧医疗';
-        }else if (this.keyword =='智慧医疗'){
-          this.keyword = '随申码';
-        }else if (this.keyword =='随申码'){
-          this.keyword = '人工智能';
-        }
-      },
-      switch_configure(){
-        this.switch_timescope();
-        this.mapData[this.keyword][this.timescope].sort(function (a, b) {
-          return a.value - b.value;
-        });
-
-        var convertData = function (data) {
-          var res = [];
-          for (var i = 0; i < data.length; i++) {
-            var geoCoord = geoCoordMap[data[i].name];
-            if (geoCoord) {
-              res.push({
-                name: data[i].name,
-                value: geoCoord.concat(data[i].value)
-              });
-            }
-          }
-          return res;
-        };
-
-        const mapOption = { // 进行相关配置
-
-          backgroundColor: "",
-          title:{
-            text:'热点地图',
-            left:'center',
-            textStyle:{
-              color:'white'
-            }
-          },
-          tooltip: {
-            trigger: 'item',
-          }, // 鼠标移到图里面的浮动提示框
-          dataRange: {
-            show: true,
-            min: this.mapData[this.keyword][this.timescope][35]['value'],
-            max: this.mapData[this.keyword][this.timescope][0]['value'],
-            text: ['High', 'Low'],
-            realtime: true,
-            calculable: true,
-            color: ['orangered', 'yellow','rgb(79, 163,213)']
-          },
-          geo: { // 这个是重点配置区
-            map: 'china', // 表示中国地图
-            roam: true, //是否允许缩放
-            // center: [105.83531246, 34.0267395887],
-            zoom:1,
-            label: {
-              normal: {
-                show: true, // 是否显示对应地名
-                textStyle: {
-                  color: 'rgba(255,255,255,1)'
-                }
-              },
-              emphasis:{
-                show: false,
-              }
-            },
-            itemStyle: {
-              normal: {
-                areaColor: {
-                  type: 'radial',
-                  x: 0.5,
-                  y: 0.5,
-                  r: 0.8,
-                  colorStops: [{
-                    offset: 0,
-                    color: 'rgba(147, 235, 248, 0)' // 0% 处的颜色
-                  }, {
-                    offset: 1,
-                    color: 'rgba(147, 235, 248, .2)' // 100% 处的颜色
-                  }],
-                  globalCoord: false // 缺省为 false
-                },
-                borderColor: 'rgba(147, 235, 248, 1)',
-                borderWidth: 1,
-                shadowColor: 'rgba(128, 217, 248, 1)',
-                // shadowColor: 'rgba(255, 255, 255, 1)',
-                shadowOffsetX: -2,
-                shadowOffsetY: 2,
-                shadowBlur: 10
-              },
-              emphasis: {
-                areaColor: 'rgba(37, 43, 61, .5)',
-                shadowOffsetX: 0,
-                shadowOffsetY: 0,
-                shadowBlur: 20,
-                borderWidth: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-              }
-            },
-            regions:[
-              {
-                name: "南海诸岛",
-                itemStyle: {
-                  // 隐藏地图
-                  normal: {
-                    opacity: 0, // 为 0 时不绘制该图形
-                  }
-                },
-                label: {
-                  show: false // 隐藏省份文案，false不隐藏
-                }
-              },
-            ]
-          },
-          series: [
-            {
-              id:'population',
-              name: '城市热点',
-              type: 'map',
-              roam: true,
-              mapType: 'china', // 自定义扩展图表类型
-              animationDurationUpdate: 1000,
-              universalTransition: true,
-              label: {
-                show: true
-              },
-              geoIndex:'0',
-              data: this.mapData[this.keyword][this.timescope],
-            },
-          ]
-        };
-        const barOption = {
-          xAxis: {
-            type: 'value'
-          },
-          yAxis: {
-            type: 'category',
-            axisLabel: {
-              rotate: 30
-            },
-            data: this.mapData[this.keyword][this.timescope].map(function (item) {
-              return item.name;
-            })
-          },
-          visualMap:{
-            min:1,
-            max:10,
-            inRange: {
-              color: ['#65B581', '#FFCE34', '#FD665F']
-            },
-          },
-          animationDurationUpdate: 1000,
-          series: {
-            type: 'bar',
-            id: 'population',
-            data: this.mapData[this.keyword][this.timescope].map(function (item) {
-              return item.value;
-            }),
-            universalTransition: true
-          }
-        };
-
-        if(this.option == 'map'){
-          this.option ='bar';
-          this.myChart.setOption(barOption,true);
-        }else{
-          this.option = 'map';
-          this.myChart.setOption(mapOption,true);
-        }
-
-      },
-
       chinaConfigure() {
-        console.log(echarts.version)
         console.log('draw!')
-        const data = [
-          { name: '海门', value: 9 },
-          { name: '鄂尔多斯', value: 12 },
-          { name: '招远', value: 212 },
-          { name: '舟山', value: 12 },
-          { name: '齐齐哈尔', value: 14 },
-          { name: '盐城', value: 215 },
-          { name: '赤峰', value: 16 },
-          { name: '青岛', value: 218 },
-          { name: '乳山', value: 18 },
-          { name: '金昌', value: 219 },
-          { name: '泉州', value: 221 },
-        ];
+        var data = [
+        ]
 
-        const geoCoordMap = {
+        var geoCoordMap = {
           海门: [121.15, 31.89],
           鄂尔多斯: [109.781327, 39.608266],
           招远: [120.38, 37.35],
@@ -432,11 +224,7 @@
           大庆: [125.03, 46.58]
         }
 
-        this.mapData[this.keyword][this.timescope].sort(function (a, b) {
-          return a.value - b.value;
-        });
-
-          var convertData = function (data) {
+        var convertData = function (data) {
           var res = [];
           for (var i = 0; i < data.length; i++) {
             var geoCoord = geoCoordMap[data[i].name];
@@ -450,12 +238,10 @@
           return res;
         };
 
-        this.myChart.hideLoading()
-        window.onresize = this.myChart.resize;
-
-
-
-        const mapOption = { // 进行相关配置
+        let myChart = echarts.init(this.$refs.myEchart); //这里是为了获得容器所在位置
+        myChart.hideLoading()
+        window.onresize = myChart.resize;
+        myChart.setOption({ // 进行相关配置
 
           backgroundColor: "",
           title:{
@@ -470,8 +256,9 @@
           }, // 鼠标移到图里面的浮动提示框
           dataRange: {
             show: true,
-            min: this.mapData[this.keyword][this.timescope][35]['value'],
-            max: this.mapData[this.keyword][this.timescope][0]['value'],
+
+            min: this.mapData[this.active_keyword][this.active_timescope][35]['value'],
+            max: this.mapData[this.active_keyword][this.active_timescope][34]['value'],
             text: ['High', 'Low'],
             realtime: true,
             calculable: true,
@@ -481,7 +268,6 @@
             map: 'china', // 表示中国地图
             roam: true, //是否允许缩放
             center: [105.83531246, 34.0267395887],
-            zoom:1,
             label: {
               normal: {
                 show: true, // 是否显示对应地名
@@ -495,6 +281,7 @@
             },
             itemStyle: {
               normal: {
+
                 areaColor: {
                   type: 'radial',
                   x: 0.5,
@@ -558,7 +345,7 @@
             symbolSize: function (val) {
               return val[2] / 10;
             },
-            showEffectOn: 'render',
+            showEffectOn: 'emphasis',
             rippleEffect: {
               brushType: 'stroke'
             },
@@ -576,67 +363,30 @@
             zlevel: 1
           },
             {
-              id:'population',
               name: '城市热点',
               type: 'map',
               roam: true,
               mapType: 'china', // 自定义扩展图表类型
-              animationDurationUpdate: 1000,
-              universalTransition: true,
               label: {
                 show: true
               },
               geoIndex:'0',
-              data: this.mapData[this.keyword][this.timescope],
+              data: this.mapData[this.active_keyword][this.active_timescope],
             },
 
           ]
-        };
-        const barOption = {
-          xAxis: {
-            type: 'value'
-          },
-          yAxis: {
-            type: 'category',
-            axisLabel: {
-              rotate: 30
-            },
-            data: this.mapData[this.keyword][this.timescope].map(function (item) {
-              return item.name;
-            })
-          },
-          animationDurationUpdate: 1000,
-          series: {
-            type: 'bar',
-            id: 'population',
-            data: this.mapData[this.keyword][this.timescope].map(function (item) {
-              return item.value;
-            }),
-            universalTransition: true
-          }
-        };
-
-        let currentOption = mapOption;
-        this.myChart.setOption(mapOption,true);
-        let mychart= this.myChart
-        this.timer = setInterval(this.switch_configure, 2000);
+        })
       }
     },
     watch:{     //监听value的变化，进行相应的操作即可
       "mapData": function (newv, oldv) {
-        clearInterval(this.timer)
         console.log(this.mapData)
         this.chinaConfigure()
       },
       "active_timescope" : function (newv, oldv) {
-        this.timescope = newv
-        clearInterval(this.timer)
-        this.myChart.clear()
         this.chinaConfigure()
       },
       "active_keyword" : function (newv, oldv) {
-        this.keyword = newv
-        clearInterval(this.timer)
         this.chinaConfigure()
       },
     },

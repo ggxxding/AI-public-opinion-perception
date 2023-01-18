@@ -86,7 +86,8 @@ map<template>
           <div class="inner">
             <h3>全国微博数量统计</h3>
             <div class="chart">
-              <barData class="bar" :barData="barData" :active_keyword="active_keyword" :active_timescope="active_timescope" :active_year="active_year"   :style="{height:0.085*screenWidth+'px' ,width:'100%'}"></barData>
+<!--              <barData class="bar" :barData="barData" :active_keyword="active_keyword" :active_timescope="active_timescope" :active_year="active_year"   :style="{height:0.085*screenWidth+'px' ,width:'100%'}"></barData>-->
+              <calendar class="calendar" :calendarData="timeDict" :active_keyword="active_keyword" :active_timescope="active_timescope" :active_year="active_year"   :style="{height:0.085*screenWidth+'px' ,width:'100%'}"></calendar>
             </div>
           </div>
         </div>
@@ -149,6 +150,7 @@ map<template>
   import lineChart from './lineChart';
   import barData from './barData';
   import clusterGraph from './clusterGraph';
+  import calendar from './calendar';
 
 export default {
   name: 'HelloWorld',
@@ -237,14 +239,26 @@ export default {
         this.screenWidth = window.screenWidth
       })()
     };
-    //this.timer();
     this.loadWeiboData();
-    this.timer = setInterval(this.loadWeiboData,20000)
+
+
   },
   beforeDestroy () {
     clearInterval(this.timer);
   },
   methods:{
+    switch_timescope(){
+      console.log('switch')
+      if(this.active_24h==true){
+        this.click_30d();
+      }else if (this.active_30d==true){
+        this.click_90d();
+      }else if (this.active_90d==true){
+        this.click_365d();
+      }else if (this.active_365d==true){
+        this.click_24h();
+      }
+    },
     click_24h(){
       this.active_timescope= '24h',
         this.active_24h=true;this.active_30d=false;this.active_90d=false;this.active_365d=false;
@@ -293,16 +307,6 @@ export default {
       this.active_keyword= '随申码',
         this.active_AI=false;this.active_face=false;this.active_medical=false;this.active_health_code=true;
     },
-    timer(){
-      var index = 0;
-      var timer = setInterval(function () {
-        index++;
-        if (index > 4) {
-          index = 0;
-        };
-        console.log(index);
-      }, 2000);
-    },
     searching() {
       console.log('submit!');
       this.$message.success("提交成功,请耐心等待输出结果");
@@ -338,6 +342,7 @@ export default {
         this.countDict = res.data['countDict'];
         this.mapData=res.data['cityList'];
         this.lineData = res.data['timeList'];
+        this.timeDict = res.data['timeDict'];
         this.barData = res.data['barData'];
         this.wordCloudList = res.data['wordCloudList']
         this.wordCloudStream = res.data['wordCloudStream']
@@ -348,7 +353,7 @@ export default {
       }).catch((error)=>{
         console.error(error);
       })
-
+      // this.timer = setInterval(  this.switch_timescope,4000)
     },
   },
   components:{
@@ -360,22 +365,23 @@ export default {
     lineChart,
     barData,
     clusterGraph,
+    calendar,
   },
   watch:{     //监听value的变化，进行相应的操作即可
-    screenHeight (val) {
-      // 为了避免频繁触发resize函数导致页面卡顿，使用定时器
-      if (!this.timer) {
-        // 一旦监听到的screenWidth值改变，就将其重新赋给data里的screenWidth
-        this.screenHeight = val
-        this.timer = true
-        let that = this
-        setTimeout(function () {
-          // 打印screenWidth变化的值
-          console.log(that.screenHeight)
-          that.timer = false
-        }, 400)
-      }
-    }
+    // screenHeight (val) {
+    //   // 为了避免频繁触发resize函数导致页面卡顿，使用定时器
+    //   if (!this.timer) {
+    //     // 一旦监听到的screenWidth值改变，就将其重新赋给data里的screenWidth
+    //     this.screenHeight = val
+    //     this.timer = true
+    //     let that = this
+    //     setTimeout(function () {
+    //       // 打印screenWidth变化的值
+    //       console.log(that.screenHeight)
+    //       that.timer = false
+    //     }, 400)
+    //   }
+    // }
   },
 }
 </script>

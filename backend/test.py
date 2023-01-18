@@ -506,6 +506,7 @@ def loadWeiboData():
     timeDict={}
     cityDict={}
     timeList={}
+    calendarList={}
     cityList={}
     textDict={}
     texts_from_now={}
@@ -544,6 +545,7 @@ def loadWeiboData():
                     'earlier': [0 for i in range(12)],
                 }
         timeList[label] = temp
+        calendarList[label] = {}
         cityList[label] = {'24h': [], '30d': [], '90d': [], '365d': []}
     now = datetime.datetime.now()
     # now = datetime.datetime(2022,4,13,0,0,0)
@@ -602,7 +604,7 @@ def loadWeiboData():
                 textDict[weiboData['label']][weiboData['created_at'][:4]].append(weiboData['longText'])
             else:
                 textDict[weiboData['label']][weiboData['created_at'][:4]].append(weiboData['text'])
-        year_month = weiboData['created_at'][:7]
+        year_month = weiboData['created_at'][:10]
         if year_month not in timeDict[weiboData['label']].keys():
             timeDict[weiboData['label']][year_month] = 1
         else:
@@ -640,14 +642,14 @@ def loadWeiboData():
                     break
             cluster_result[keyword][key] = temp_result
 
-
+    # 年月折线图、日历
     for keyword in timeDict:
         for key in timeDict[keyword]:
-            date_key = datetime.datetime.strptime(key, '%Y/%m')
+            date_key = datetime.datetime.strptime(key, '%Y/%m/%d')
             if date_key.year not in [2022,2021,2020]:
-                timeList[keyword]['earlier'][date_key.month-1]=timeDict[keyword][key]
+                timeList[keyword]['earlier'][date_key.month-1]+=timeDict[keyword][key]
             else:
-                timeList[keyword][str(date_key.year)][date_key.month-1]=timeDict[keyword][key]
+                timeList[keyword][str(date_key.year)][date_key.month-1]+=timeDict[keyword][key]
 
     for keyword in cityDict:
         for key in cityDict[keyword]:
@@ -667,7 +669,9 @@ def loadWeiboData():
     # return jsonify({'cityList':cityList, 'timeList':timeList, 'barData':barData, 'wordCloudList':wordCloudList,
 	# 				'countDict':countDict , 'wordCloudStream':word_cloud_stream ,'clusterResult':cluster_result,
 	# 				'sentiment_result':sentiment_result})
-    res = {'cityList':cityList, 'timeList':timeList, 'barData':barData, 'wordCloudList':wordCloudList,'countDict':countDict , 'wordCloudStream':word_cloud_stream ,'clusterResult':cluster_result,'sentiment_result':sentiment_result}
+    res = {'cityList':cityList, 'timeList':timeList, 'timeDict':timeDict, 'barData':barData, 'wordCloudList':wordCloudList,
+    'countDict':countDict , 'wordCloudStream':word_cloud_stream ,'clusterResult':cluster_result,
+    'sentiment_result':sentiment_result}
     with open('./res/temp_result.txt','w') as f:
         f.write(json.dumps(res))
     os.rename('./res/temp_result.txt', './res/data.txt')

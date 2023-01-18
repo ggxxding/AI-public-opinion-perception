@@ -30,7 +30,7 @@ class SchedulerConfig(object):
 # 定义任务执行程序
 def print_job():
 	print("间隔一天，执行定时任务")
-	getDataFromWeibo.main('人脸识别')
+	# getDataFromWeibo.main('人脸识别')
 #为实例化的flask引入定时任务配置
 # app.config.from_object(SchedulerConfig())
 
