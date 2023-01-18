@@ -616,6 +616,7 @@
           }
         };
 
+        
         let currentOption = mapOption;
         this.myChart.setOption(mapOption,true);
         let mychart= this.myChart
