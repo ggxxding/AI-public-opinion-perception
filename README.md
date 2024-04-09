@@ -1,6 +1,10 @@
 # AI-public-opinion-perception
 python3.8
 
+若缺少zh_core_web_md
+https://spacy.io/models/zh#zh_core_web_md下载
+并直接用pip install即可
+
 安装哈工大LTP(4.1.5post2): pip install ltp
 
 import ltp可能遇到找不到GLIBCXX_3.4.21,需要升级gcc到6.1.0以上,参考http://blog.sina.com.cn/s/blog_15ae676c40102wv6w.html
