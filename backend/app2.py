@@ -44,10 +44,10 @@ china_city=['新疆','西藏','青海','甘肃','内蒙古','河北','山西','�
 		   '福建','江西','山东','河南','湖北','湖南','广东','海南','四川','贵州','云南','陕西','甘肃','台湾','广西',
 		   '宁夏','北京','天津','上海','重庆','香港','澳门']
 
-myclient = pymongo.MongoClient('mongodb://192.168.71.214:27017/')
-mydb = myclient['spider_weibo']
-collist = mydb.list_collection_names()
-mycol = mydb['selenium_weibo']
+# myclient = pymongo.MongoClient('mongodb://192.168.71.214:27017/')
+# mydb = myclient['spider_weibo']
+# collist = mydb.list_collection_names()
+# mycol = mydb['selenium_weibo']
 
 
 

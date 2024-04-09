@@ -27,3 +27,4 @@ cd Senta
 
 python -m pip install .
 
+app2.py为展示用代码，不包含定时爬虫，先将mongodb的一部分数据存入backend/res/data/txt，并直接用app2读取，不在访问mongodb
