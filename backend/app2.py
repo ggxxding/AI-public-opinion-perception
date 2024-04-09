@@ -35,7 +35,7 @@ def print_job():
 # app.config.from_object(SchedulerConfig())
 
 stopwords=['人脸','识别',' ']
-with open('res/stopwords1893.csv','r') as f:
+with open('res/stopwords1893.csv','r',encoding='utf-8') as f:
 	for line in f.readlines():
 		stopwords.append(line.strip().strip('\n'))
 # print(stopwords)
@@ -48,6 +48,7 @@ myclient = pymongo.MongoClient('mongodb://192.168.71.214:27017/')
 mydb = myclient['spider_weibo']
 collist = mydb.list_collection_names()
 mycol = mydb['selenium_weibo']
+
 
 
 @app.route('/searching', methods=['POST'])
@@ -74,4 +75,4 @@ if __name__ == '__main__':
 	scheduler = APScheduler()  # 实例化APScheduler
 	scheduler.init_app(app)  # 把任务列表载入实例flask
 	scheduler.start()  # 启动任务计划
-	app.run(host='0.0.0.0')
+	app.run(host='127.0.0.1',port= '5050')

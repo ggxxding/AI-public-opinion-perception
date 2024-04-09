@@ -158,7 +158,7 @@ export default {
     return {
       timer:"",
       screenWidth: document.documentElement.clientWidth,
-      url:"http://192.168.71.214:5000/",
+      url:"http://localhost:5050/",
       msg: 'Welcome to Your Vue.js App',
       formInline: {
         keyword: '',
