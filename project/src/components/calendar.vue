@@ -159,12 +159,12 @@
           this.timescope = newv
           clearInterval(this.timer)
           this.myChart.clear()
-          this.chinaConfigure()
+          this.setOption()
         },
         "active_keyword" : function (newv, oldv) {
           this.keyword = newv
           clearInterval(this.timer)
-          this.chinaConfigure()
+          this.setOption()
         },
       },
     }
