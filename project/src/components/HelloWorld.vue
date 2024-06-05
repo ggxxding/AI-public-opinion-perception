@@ -51,9 +51,9 @@ map<template>
           <div class="inner">
             <div class="caption">
             <h3 >时间统计</h3>
+              <a  href="javascript:;" :class="{active:active_2023}" @click="click_2023">2023</a>
               <a  href="javascript:;" :class="{active:active_2022}" @click="click_2022">2022</a>
-              <a  href="javascript:;" :class="{active:active_2021}" @click="click_2021">2021</a>
-              <a href="javascript:;" :class="{active:active_2020}" @click="click_2020">2020</a>
+              <a href="javascript:;" :class="{active:active_2021}" @click="click_2021">2021</a>
               <a href="javascript:;" :class="{active:active_earlier}" @click="click_earlier">更早</a>
             </div>
             <div class="chart" >
@@ -158,7 +158,7 @@ export default {
     return {
       timer:"",
       screenWidth: document.documentElement.clientWidth,
-      url:"http://localhost:5050/",
+      url:"http://127.0.0.1:5050/",
       msg: 'Welcome to Your Vue.js App',
       formInline: {
         keyword: '',
@@ -218,9 +218,9 @@ export default {
       active_30d:false,
       active_90d:false,
       active_365d:false,
-      active_2022:true,
+      active_2023:true,
+      active_2022:false,
       active_2021:false,
-      active_2020:false,
       active_earlier:false,
       active_AI:false,
       active_face:true,
@@ -275,21 +275,21 @@ export default {
       this.active_timescope =  '365d',
         this.active_24h=false;this.active_30d=false;this.active_90d=false;this.active_365d=true;
     },
+    click_2023(){
+      this.active_year= '2023',
+      this.active_2023=true;this.active_2022=false;this.active_2021=false;this.active_earlier=false;
+    },
     click_2022(){
-      this.active_year= '2022',
-      this.active_2022=true;this.active_2021=false;this.active_2020=false;this.active_earlier=false;
+      this.active_year = '2022',
+      this.active_2023=false;this.active_2022=true;this.active_2021=false;this.active_earlier=false;
     },
     click_2021(){
       this.active_year = '2021',
-      this.active_2022=false;this.active_2021=true;this.active_2020=false;this.active_earlier=false;
-    },
-    click_2020(){
-      this.active_year = '2020',
-      this.active_2022=false;this.active_2021=false;this.active_2020=true;this.active_earlier=false;
+      this.active_2023=false;this.active_2022=false;this.active_2021=true;this.active_earlier=false;
     },
     click_earlier(){
       this.active_year =  'earlier',
-      this.active_2022=false;this.active_2021=false;this.active_2020=false;this.active_earlier=true;
+      this.active_2023=false;this.active_2022=false;this.active_2021=false;this.active_earlier=true;
     },
     click_AI(){
       this.active_keyword = '人工智能',
