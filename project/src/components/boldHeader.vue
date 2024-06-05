@@ -20,7 +20,7 @@ name: "boldHeader"
 
 <style scoped>
 .root{
-  background-image: url("../assets/background.svg");
+  background-image: require("../assets/background.svg");
   background-repeat: no-repeat;
 }
 .top{

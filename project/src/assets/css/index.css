@@ -42,8 +42,10 @@ a{
 .panel {
     /* 边框 */
     box-sizing: border-box;
-    border: 2px solid red;
-    border-image: url(../images/border.png) 51 38 21 132;
+    //border: 2px solid red;
+    border-style: solid;
+    border-color:transparent;
+    border-image: url(@/../../../assets/images/border.png) 51 38 21 132;
     border-width: 2.125rem 1.583rem 0.875rem 5.5rem;
     position: relative;
     margin-bottom: 0.833rem;

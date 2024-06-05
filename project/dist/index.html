@@ -1,0 +1,14 @@
+<!DOCTYPE html><html><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>project</title><link href=./static/css/app.21364149498e8a4ff1b273a27c64289c.css rel=stylesheet></head><body><div id=app></div><script type=text/javascript src=./static/js/manifest.3ad1d5771e9b13dbdad2.js></script><script type=text/javascript src=./static/js/vendor.df0be333b6289b5a7fb1.js></script><script type=text/javascript src=./static/js/app.5e7ab0680f11f23e42d5.js></script></body><script>fnResize();
+  window.onresize = function () {
+    fnResize();
+  }
+  function fnResize() {
+    var deviceWidth = document.documentElement.clientWidth || window.innerWidth;
+    if (deviceWidth >= 1920) {
+      deviceWidth = 1920;
+    }
+    if (deviceWidth <= 1080) {
+      deviceWidth = 1080;
+    }
+    document.documentElement.style.fontSize = (deviceWidth / 80) + 'px';
+  }</script></html>
